@@ -1,0 +1,35 @@
+DQCBase
+===================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: DQCBase
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DQCBase.__init__
+      ~DQCBase.acquire_data
+      ~DQCBase.bin_switch_blank
+      ~DQCBase.bin_switch_fieldsweep
+      ~DQCBase.build_sequences
+      ~DQCBase.get_spectrometer
+      ~DQCBase.plot
+      ~DQCBase.post_process_data
+      ~DQCBase.process_overrides
+      ~DQCBase.pull
+      ~DQCBase.push
+      ~DQCBase.run
+      ~DQCBase.set_field
+      ~DQCBase.simple_sequence
+   
+   
+
+   
+   
+   

@@ -1,0 +1,36 @@
+COSYAverages
+========================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: COSYAverages
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~COSYAverages.__init__
+      ~COSYAverages.acquire_data
+      ~COSYAverages.bin_switch_blank
+      ~COSYAverages.bin_switch_fieldsweep
+      ~COSYAverages.build_sequences
+      ~COSYAverages.get_spectrometer
+      ~COSYAverages.plot
+      ~COSYAverages.plot_experiment
+      ~COSYAverages.post_process_data
+      ~COSYAverages.process_overrides
+      ~COSYAverages.pull
+      ~COSYAverages.push
+      ~COSYAverages.run
+      ~COSYAverages.set_field
+      ~COSYAverages.simple_sequence
+   
+   
+
+   
+   
+   

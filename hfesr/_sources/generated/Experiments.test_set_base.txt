@@ -1,0 +1,6 @@
+test_set_base
+=========================
+
+.. currentmodule:: Experiments
+
+.. autofunction:: test_set_base

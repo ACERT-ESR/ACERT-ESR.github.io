@@ -1,0 +1,305 @@
+============
+Spectrometer
+============
+
+Devices Managed by the Spectrometer
+-------------------------------------
+
+.. automodule:: Devices
+    :members:
+
+In addition, there are the Chase DWG11000 signal generator and 
+SpinCore PulseBlaster signal generator.
+
+Transceiver Control
+-------------------
+
+Transmitter Power
+^^^^^^^^^^^^^^^^^
+
+.. automethod:: Spectrometer.Spectrometer.set_microwave_attenuation
+
+.. automethod:: Spectrometer.Spectrometer.set_microwave_attenuation
+
+Operating Frequency
+^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: Spectrometer.Spectrometer.get_microwave_frequency
+
+Magnet Control
+--------------
+
+The magnetic field control functions assume that the necessary magnet coils are
+connected to their respective power supplies. It is important that these
+connections are performed properly: for the main coil, the persistent current
+must match the current delivered by the power supply before the heater switch
+is opened; similarly, the sweep coil current set by software must correspond to
+the manually set sweep current on the sweep coil supply before the supply is
+switched from manual to externally controlled operation.
+
+Magnet control functions operate on currents (measured in amperes). The
+currents are related to the magnetic field by calibration constants. This
+choice was made so that an update of the calibration constants does not result
+in calculating an incorrect current from a given field (like a certain
+commercial W-band ESR spectrometer), which could lead to a quench of the
+magnet.
+
+Main Coil Control
+^^^^^^^^^^^^^^^^^
+
+.. automethod:: Spectrometer.Spectrometer.set_main_current
+
+.. automethod:: Spectrometer.Spectrometer.get_main_current
+
+Sweep Coil Control
+^^^^^^^^^^^^^^^^^^
+
+.. automethod:: Spectrometer.Spectrometer.set_sweep_current
+
+.. automethod:: Spectrometer.Spectrometer.get_sweep_current
+
+Calibration Constants and Conversion Functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Spectrometer maintains constants that can be used to
+convert between currents and nominal magnetic fields.::
+
+    95 GHz: s.main_tesla_per_ampere
+    0.11644
+    95 GHz: s.sweep_tesla_per_ampere
+    0.0050000000000001
+    95 GHz:
+
+Other constants describe allowed current ranges (in Amperes) and
+parameters for implicit current ramp generation.::
+
+    95 GHz: s.max_sweep_current
+    10.0
+    95 GHz: s.min_sweep_current
+    -10.0
+    95 GHz: s.max_sweep_current_step
+    0.050000000000000003
+    95 GHz: s.sweep_current_settling_time
+    0.050000000000000003
+
+
+For convenience, functions are provided to calculate nominal currents
+(in Amperes) to achieve a desired magnetic field (in Teslas). Note
+that the calculated sweep coil depends on the set main coil
+current.
+
+.. method:: Spectrometer.Spectrometer.calculate_main_current
+
+.. method:: Spectrometer.Spectrometer.calculate_sweep_current
+
+
+Lock-In Detection
+-----------------
+
+
+The lock-in functions are typically used for field-modulated cw ESR
+experiments.
+
+
+Field Modulation and Lock-In Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Various operating parameters of the lock-in amplifiers can be set or read out
+under software control. The two single-channel lock-in amplifiers currently
+used are bonded together to one virtual instrument. Setting a parameter will
+affect both lock-ins; reading a parameter will generate an error if there is a
+discrepancy between the lock-in settings.
+
+In practical operation, it is often convenient to set parameters via the
+lock-in front panel controls and merely read them out in software to document
+the experiment. Note that some of the front panel settings (like e.g.\ dynamic
+reserve) are not readily accessible by software (but they are supported by
+``sync_lockin_settings``, see below).
+
+Modulation Frequency
+^^^^^^^^^^^^^^^^^^^^^
+
+The modulation frequency [Hz], which also is the reference for the lock-in
+amplifiers, can be accessed as follows::
+
+   95 GHz: s.set_modulation_frequency(100000)
+   100000.0
+   95 GHz: s.get_modulation_frequency()
+   100000.0
+
+Note that the ``set_modulation_frequency`` function returns the
+achieved modulation frequency. This achieved frequency may be slightly
+different from the frequency requested due to limitations of the VCO and
+frequency readout hardware. Regulating the modulation frequency may take
+several seconds.
+
+Modulation Amplitude
+^^^^^^^^^^^^^^^^^^^^
+
+In the current hardware implementation, the modulation amplitude (in teslas)
+cannot be set or read back by software. To accomodate such future
+functionality, stub functions are provided. Presently, they return
+``None``::
+
+   95 GHz: s.set_modulation_amplitude(2e-4)
+   95 GHz: s.get_modulation_amplitude()
+
+Time Constant
+^^^^^^^^^^^^^^^^^^^
+
+Time constants are specified in seconds. Note that the lock-in hardware may
+allow only certain discrete values. The time constant is rounded towards
+smaller values, if necessary.::
+
+   95 GHz: s.set_lockin_time_constant(7e-3)
+   0.0030000000000000001
+   95 GHz: s.get_lockin_time_constant()
+   0.0030000000000000001
+
+Sensitivity
+^^^^^^^^^^^^^^^^
+
+The full-scale lock-in sensitivity is specified in volts. Only certain
+sensitivities are supported by the hardware. To avoid clipping, the sensitivity
+is rounded towards larger values, if necessary.::
+
+   95 GHz: s.set_lockin_sensitivity(0.15)
+   0.20000000000000001
+   95 GHz: s.get_lockin_sensitivity()
+   0.20000000000000001
+
+Phase
+^^^^^^^^^^^^^^
+
+The detection phase of the lock-in amplifiers is specified in degrees.
+
+   95 GHz: s.set_lockin_phase(22.5)
+   22.5
+   95 GHz: s.get_lockin_phase()
+   22.5
+
+Synchronizing Lock-In Settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The settings of the lock-in amplifiers can be synchronized to enforce
+consistence.  This is of particular use if parameters are changed from the
+lock-in front panel.  The settings of the *primary* lock-in amplifier are
+copied to the *secondary* amplifier.::
+
+   95 GHz: s.sync_lockin_settings()
+
+Signal Readout
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The acquired signal can be read out under software control. Both lock-in
+amplifiers are read out nearly synchronously (exact synchronism is not
+possible due to hardware limitations). The readings are combined into a complex
+value, where the real part represents the *primary* amplifier, and the
+imaginary part represents the *secondary* amplifier.  The returned value is
+in volts.::
+
+   95 GHz: s.get_lockin_voltage()
+   (0.00029999999999999997+0.0001j)
+
+Digitizer/Averager
+---------------------
+
+To simplify configuration, the digitizers are always run in averager mode. They
+are configured to trigger on the positive edge of a TTL level pulse ($1.4$~V
+threshold) on the external trigger input. Where the characteristics of the
+signal inputs are configurable, an impedance of 50 ohms and maximum bandwidth
+are selected.
+
+Digitizer/Averager Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Input Voltage Range
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The input voltage range\ :math:`-v \ldots +v`\ (in volts) of the averager inputs can be
+set and read back with the following functions. The software sets and assumes
+the same range for both channels.[#f1]_ If the requested range is not supported by the hardware, it may be
+rounded.::
+
+   95 GHz: s.set_averager_sensitivity(0.75)
+   0.5
+   95 GHz: s.get_averager_sensitivity()
+   0.5
+
+Sampling Time
+^^^^^^^^^^^^^^^^^^^
+
+The sampling time (the inverse of the sampling rate) can be set and read back
+using the following functions. The requested sampling time may be rounded to a
+value supported by the hardware. The time is specified in seconds.::
+
+   95 GHz: s.set_averager_samplingtime(1.1e-9)
+   1.0000000000000001e-09
+   95 GHz: s.get_averager_samplingtime()
+   1.0000000000000001e-09
+
+Record Length
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The record length (number of samples to be acquired) can be set and and queried
+using the following functions.  Note that the record length may be rounded to a
+value supported by the hardware.::
+
+   95 GHz: s.set_record_length(1234)
+   1248
+   95 GHz: s.get_record_length()
+   1248
+
+Starting an Acquisition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The averaging process is started by using the following function, which takes
+the requested number of trigger events\ :math:`n`\ as an argument. Note that\ :math:` n`\ is
+restricted to\ :math:`1<n<65536`::
+
+   95 GHz: s.start_averager(100)
+
+Checking Acquisition Status
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The acquisition status of the averager may be checked using the following
+function, which returns 1 if the averagers are running and 0 if they have been
+stopped or completed the requested number of averages.::
+
+   95 GHz: s.averager_busy()
+   1
+
+Aborting an Acquisition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A running acquisition may be aborted. This is useful as a fallback to reset the
+averagers if the acquisition does not complete on its own for some reason
+(i.e.\ insufficient trigger events). Note that this is a slow operation and
+should be avoided unless necessary.::
+
+   95 GHz: s.averager_busy()
+   1
+   95 GHz: s.stop_averager()
+   95 GHz: s.averager_busy()
+   0
+
+Data Readout
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After the acquisition, the averaged data record can be read out. It is returned
+as a complex-valued array of values, where the real part represents the first
+and the imaginary part the second averager channel. The samples are represented
+in volts.::
+
+   95 GHz: s.read_averager()
+   array([-0.10078125-0.10078125j, -0.10078125-0.10078125j,
+        -0.10078125-0.10078125j, -0.10078125-0.10078125j,
+        (...)
+        -0.10078125-0.10078125j, -0.10078125-0.10078125j])
+
+.. [#f1] This is a deliberate design decision
+   to ensure that the quantization noise is at the same level for both channels.
+   Also note that in a phase-cycled experiment, the functional role of the
+   channels with respect to in-phase and out-of-phase components effectively
+   alternates.
+

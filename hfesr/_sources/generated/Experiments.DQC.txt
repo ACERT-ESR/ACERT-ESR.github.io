@@ -1,0 +1,35 @@
+DQC
+===============
+
+.. currentmodule:: Experiments
+
+.. autoclass:: DQC
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DQC.__init__
+      ~DQC.acquire_data
+      ~DQC.bin_switch_blank
+      ~DQC.bin_switch_fieldsweep
+      ~DQC.build_sequences
+      ~DQC.get_spectrometer
+      ~DQC.plot
+      ~DQC.post_process_data
+      ~DQC.process_overrides
+      ~DQC.pull
+      ~DQC.push
+      ~DQC.run
+      ~DQC.set_field
+      ~DQC.simple_sequence
+   
+   
+
+   
+   
+   

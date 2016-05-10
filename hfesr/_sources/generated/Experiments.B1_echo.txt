@@ -1,0 +1,38 @@
+B1_echo
+===================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: B1_echo
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~B1_echo.__init__
+      ~B1_echo.acquire_data
+      ~B1_echo.bin_switch_blank
+      ~B1_echo.bin_switch_fieldsweep
+      ~B1_echo.build_sequences
+      ~B1_echo.check_inputs
+      ~B1_echo.gen_pulse
+      ~B1_echo.get_spectrometer
+      ~B1_echo.plot
+      ~B1_echo.plot_experiment
+      ~B1_echo.post_process_data
+      ~B1_echo.process_overrides
+      ~B1_echo.pull
+      ~B1_echo.push
+      ~B1_echo.run
+      ~B1_echo.set_field
+      ~B1_echo.simple_sequence
+   
+   
+
+   
+   
+   

@@ -1,0 +1,38 @@
+echo_T2
+===================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: echo_T2
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~echo_T2.__init__
+      ~echo_T2.acquire_data
+      ~echo_T2.bin_switch_blank
+      ~echo_T2.bin_switch_fieldsweep
+      ~echo_T2.build_sequences
+      ~echo_T2.check_inputs
+      ~echo_T2.gen_pulse
+      ~echo_T2.get_spectrometer
+      ~echo_T2.plot
+      ~echo_T2.plot_experiment
+      ~echo_T2.post_process_data
+      ~echo_T2.process_overrides
+      ~echo_T2.pull
+      ~echo_T2.push
+      ~echo_T2.run
+      ~echo_T2.set_field
+      ~echo_T2.simple_sequence
+   
+   
+
+   
+   
+   

@@ -1,0 +1,37 @@
+FID
+===============
+
+.. currentmodule:: Experiments
+
+.. autoclass:: FID
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FID.__init__
+      ~FID.acquire_data
+      ~FID.bin_switch_blank
+      ~FID.bin_switch_fieldsweep
+      ~FID.build_sequences
+      ~FID.get_spectrometer
+      ~FID.plot
+      ~FID.plot_experiment
+      ~FID.plot_pulses
+      ~FID.post_process_data
+      ~FID.process_overrides
+      ~FID.pull
+      ~FID.push
+      ~FID.run
+      ~FID.set_field
+      ~FID.simple_sequence
+   
+   
+
+   
+   
+   

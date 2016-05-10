@@ -1,0 +1,36 @@
+ELDOR
+=================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: ELDOR
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ELDOR.__init__
+      ~ELDOR.acquire_data
+      ~ELDOR.bin_switch_blank
+      ~ELDOR.bin_switch_fieldsweep
+      ~ELDOR.build_sequences
+      ~ELDOR.get_spectrometer
+      ~ELDOR.plot
+      ~ELDOR.plot_experiment
+      ~ELDOR.post_process_data
+      ~ELDOR.process_overrides
+      ~ELDOR.pull
+      ~ELDOR.push
+      ~ELDOR.run
+      ~ELDOR.set_field
+      ~ELDOR.simple_sequence
+   
+   
+
+   
+   
+   

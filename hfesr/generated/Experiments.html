@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Experiments &mdash; 95 GHz ESR Software 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="95 GHz ESR Software 0.9 documentation" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Experiments">
+<span id="experiments"></span><h1>Experiments<a class="headerlink" href="#module-Experiments" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-Experiments" title="Experiments"><code class="xref py py-mod docutils literal"><span class="pre">Experiments</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>A collection of EPR experiments</p>
+<p class="rubric">Functions</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.OnePulsedAcquisition.html#Experiments.OnePulsedAcquisition" title="Experiments.OnePulsedAcquisition"><code class="xref py py-obj docutils literal"><span class="pre">OnePulsedAcquisition</span></code></a>(spectrometer,&nbsp;...[,&nbsp;addjmp])</td>
+<td>This is just like PulsedAcquisition except that it sends all of the sequences and averages over all of them.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.PulsedAcquisition.html#Experiments.PulsedAcquisition" title="Experiments.PulsedAcquisition"><code class="xref py py-obj docutils literal"><span class="pre">PulsedAcquisition</span></code></a>(spectrometer,&nbsp;sequences,&nbsp;...)</td>
+<td>Acquires measurements like PulsedAcquistion, except that it crates a 3D array of numbers: [bins x] samples x pulses x phases.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.clearkey.html#Experiments.clearkey" title="Experiments.clearkey"><code class="xref py py-obj docutils literal"><span class="pre">clearkey</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.handle_break.html#Experiments.handle_break" title="Experiments.handle_break"><code class="xref py py-obj docutils literal"><span class="pre">handle_break</span></code></a>(signum,&nbsp;frame)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.keypress.html#Experiments.keypress" title="Experiments.keypress"><code class="xref py py-obj docutils literal"><span class="pre">keypress</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.plot_data.html#Experiments.plot_data" title="Experiments.plot_data"><code class="xref py py-obj docutils literal"><span class="pre">plot_data</span></code></a>(pl,&nbsp;x,&nbsp;y[,&nbsp;scaling,&nbsp;zeropos,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.test_experiments.html#Experiments.test_experiments" title="Experiments.test_experiments"><code class="xref py py-obj docutils literal"><span class="pre">test_experiments</span></code></a>()</td>
+<td>Running every experiment through a mock spectrometer.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.test_experiments_pulseblaster.html#Experiments.test_experiments_pulseblaster" title="Experiments.test_experiments_pulseblaster"><code class="xref py py-obj docutils literal"><span class="pre">test_experiments_pulseblaster</span></code></a>()</td>
+<td>Running every experiment through a mock spectrometer using the pulseblaster card.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.test_experiments_tune.html#Experiments.test_experiments_tune" title="Experiments.test_experiments_tune"><code class="xref py py-obj docutils literal"><span class="pre">test_experiments_tune</span></code></a>()</td>
+<td>Running Tune.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.test_set_base.html#Experiments.test_set_base" title="Experiments.test_set_base"><code class="xref py py-obj docutils literal"><span class="pre">test_set_base</span></code></a>()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.B1_FID.html#Experiments.B1_FID" title="Experiments.B1_FID"><code class="xref py py-obj docutils literal"><span class="pre">B1_FID</span></code></a>(**kwargs)</td>
+<td>This experiment is used for finding B1 using a single-pulse FID method.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.B1_echo.html#Experiments.B1_echo" title="Experiments.B1_echo"><code class="xref py py-obj docutils literal"><span class="pre">B1_echo</span></code></a>(**kwargs)</td>
+<td>According to John, this is obsolete.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.B1_se.html#Experiments.B1_se" title="Experiments.B1_se"><code class="xref py py-obj docutils literal"><span class="pre">B1_se</span></code></a>(**kwargs)</td>
+<td>This is like B1_echo, but modified by john so the second pulse is twice the first, and so the second ends at &#8220;t = 0&#8221;</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.COSY.html#Experiments.COSY" title="Experiments.COSY"><code class="xref py py-obj docutils literal"><span class="pre">COSY</span></code></a>(**kwargs)</td>
+<td>The Correlation Spectroscopy (COSY) class implements a two-pulse correlation spectroscopy experiment.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.COSYAverages.html#Experiments.COSYAverages" title="Experiments.COSYAverages"><code class="xref py py-obj docutils literal"><span class="pre">COSYAverages</span></code></a>(**kwargs)</td>
+<td>The Correlation Spectroscopy (COSY) class implements a two-pulse correlation spectroscopy experiment.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.CW.html#Experiments.CW" title="Experiments.CW"><code class="xref py py-obj docutils literal"><span class="pre">CW</span></code></a>(**kwargs)</td>
+<td>Field-swept and field-modulated continuous wave ESR experiment.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.Constants.html#Experiments.Constants" title="Experiments.Constants"><code class="xref py py-obj docutils literal"><span class="pre">Constants</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.DEER3.html#Experiments.DEER3" title="Experiments.DEER3"><code class="xref py py-obj docutils literal"><span class="pre">DEER3</span></code></a>(**kwargs)</td>
+<td>DEER 3 pulse experiment: pi/2 - t1 - pi/2 - T - pi/2 - t2</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.DEER4.html#Experiments.DEER4" title="Experiments.DEER4"><code class="xref py py-obj docutils literal"><span class="pre">DEER4</span></code></a>(**kwargs)</td>
+<td>4 pulse experiment:</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.DQC.html#Experiments.DQC" title="Experiments.DQC"><code class="xref py py-obj docutils literal"><span class="pre">DQC</span></code></a>(**kwargs)</td>
+<td>6 pulse experiment: pi/2 - tp - pi - tp - pi/2 - t1 - pi - t1 - pi/2 - (tm-tp) - pi - t2</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.DQC128.html#Experiments.DQC128" title="Experiments.DQC128"><code class="xref py py-obj docutils literal"><span class="pre">DQC128</span></code></a>(**kwargs)</td>
+<td>6 pulse experiment: pi/2 - tp - pi - tp - pi/2 - t1 - pi - t1 - pi/2 - (tm-tp) - pi - t2</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.DQC256.html#Experiments.DQC256" title="Experiments.DQC256"><code class="xref py py-obj docutils literal"><span class="pre">DQC256</span></code></a>(**kwargs)</td>
+<td>6 pulse experiment: pi/2 - tp - pi - tp - pi/2 - t1 - pi - t1 - pi/2 - (tm-tp) - pi - t2</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.DQC64.html#Experiments.DQC64" title="Experiments.DQC64"><code class="xref py py-obj docutils literal"><span class="pre">DQC64</span></code></a>(**kwargs)</td>
+<td>6 pulse experiment: pi/2 - tp - pi - tp - pi/2 - t1 - pi - t1 - pi/2 - (tm-tp) - pi - t2&#8221;</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.DQCBase.html#Experiments.DQCBase" title="Experiments.DQCBase"><code class="xref py py-obj docutils literal"><span class="pre">DQCBase</span></code></a>(**kwargs)</td>
+<td>6 pulse experiment: pi/2 - tp - pi - tp - pi/2 - t1 - pi - t1 - pi/2 - (tm-tp) - pi - t2</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.ELDOR.html#Experiments.ELDOR" title="Experiments.ELDOR"><code class="xref py py-obj docutils literal"><span class="pre">ELDOR</span></code></a>(**kwargs)</td>
+<td>The Exchange Correlation Spectroscopy (2D-ELDOR/EXCSY) class implements a three-pulse exchange correlation spectroscopy / 2D electron-electron double resonance spectroscopy experiment.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.ELDOR_3D.html#Experiments.ELDOR_3D" title="Experiments.ELDOR_3D"><code class="xref py py-obj docutils literal"><span class="pre">ELDOR_3D</span></code></a>(**kwargs)</td>
+<td>The Exchange Correlation Spectroscopy (2D-ELDOR/EXCSY) class implements a three-pulse exchange correlation spectroscopy / 2D electron-electron double resonance spectroscopy experiment.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.Echo.html#Experiments.Echo" title="Experiments.Echo"><code class="xref py py-obj docutils literal"><span class="pre">Echo</span></code></a>(**kwargs)</td>
+<td>The Spin Echo experiment measures T2.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.Experiment.html#Experiments.Experiment" title="Experiments.Experiment"><code class="xref py py-obj docutils literal"><span class="pre">Experiment</span></code></a>()</td>
+<td>Every experiment supports these functions.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.FID.html#Experiments.FID" title="Experiments.FID"><code class="xref py py-obj docutils literal"><span class="pre">FID</span></code></a>(**kwargs)</td>
+<td>Free induction decay experiment implements a one-pulse free induction decay experiment.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.FIDAverages.html#Experiments.FIDAverages" title="Experiments.FIDAverages"><code class="xref py py-obj docutils literal"><span class="pre">FIDAverages</span></code></a>(**kwargs)</td>
+<td>Free induction decay experiment implements a one-pulse free induction decay experiment.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.Loopback.html#Experiments.Loopback" title="Experiments.Loopback"><code class="xref py py-obj docutils literal"><span class="pre">Loopback</span></code></a>(**kwargs)</td>
+<td>Modeled after the FID experiment, this is designed to test whether the signal generator and averager are working correctly.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.PulseExperimentBase.html#Experiments.PulseExperimentBase" title="Experiments.PulseExperimentBase"><code class="xref py py-obj docutils literal"><span class="pre">PulseExperimentBase</span></code></a>([field_sweep])</td>
+<td>Base class for pulsed experiments, implements on and off-field measurements using sweep coil ..</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.PulseTune.html#Experiments.PulseTune" title="Experiments.PulseTune"><code class="xref py py-obj docutils literal"><span class="pre">PulseTune</span></code></a>(**kwargs)</td>
+<td>The Pulse Tune experiment measures T1.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.SECSY.html#Experiments.SECSY" title="Experiments.SECSY"><code class="xref py py-obj docutils literal"><span class="pre">SECSY</span></code></a>(**kwargs)</td>
+<td>Spin Echo Correlation Spectroscopy (SECSY).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.T1_inv.html#Experiments.T1_inv" title="Experiments.T1_inv"><code class="xref py py-obj docutils literal"><span class="pre">T1_inv</span></code></a>(**kwargs)</td>
+<td>T1_inv recovery experiment.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.Tune.html#Experiments.Tune" title="Experiments.Tune"><code class="xref py py-obj docutils literal"><span class="pre">Tune</span></code></a>(**kwargs)</td>
+<td>This resonator tuning aid generates a sequence of four pulses at 50, 100, 150, and 200 ns after the acquisition trigger with phases of 0, 90, 180, and 270 degrees, respectively, and renders a live display of the received quadrature signal on the screen.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.Tune2.html#Experiments.Tune2" title="Experiments.Tune2"><code class="xref py py-obj docutils literal"><span class="pre">Tune2</span></code></a>(**kwargs)</td>
+<td>This is an experiment that is like the FID experiment but used for tuning,     so it runs until a key is pressed.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.Tune3.html#Experiments.Tune3" title="Experiments.Tune3"><code class="xref py py-obj docutils literal"><span class="pre">Tune3</span></code></a>(**kwargs)</td>
+<td>This is an experiment that is like the FID experiment but used for tuning,     so it runs until a key is pressed.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.TuneCWConstant.html#Experiments.TuneCWConstant" title="Experiments.TuneCWConstant"><code class="xref py py-obj docutils literal"><span class="pre">TuneCWConstant</span></code></a>(**kwargs)</td>
+<td>This is an experiment that is like the FID experiment but used for tuning,     so it runs until a key is pressed.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.TuneCWCycled.html#Experiments.TuneCWCycled" title="Experiments.TuneCWCycled"><code class="xref py py-obj docutils literal"><span class="pre">TuneCWCycled</span></code></a>(**kwargs)</td>
+<td>This is an experiment that is like the FID experiment but used for tuning,     so it runs until a key is pressed.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.TuneCycled.html#Experiments.TuneCycled" title="Experiments.TuneCycled"><code class="xref py py-obj docutils literal"><span class="pre">TuneCycled</span></code></a>(**kwargs)</td>
+<td>Like the FID experiment, but used for tuning, so it runs until a key is pressed.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.TuneEcho.html#Experiments.TuneEcho" title="Experiments.TuneEcho"><code class="xref py py-obj docutils literal"><span class="pre">TuneEcho</span></code></a>(**kwargs)</td>
+<td>For tuning on signal.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.TuneEchoCycled.html#Experiments.TuneEchoCycled" title="Experiments.TuneEchoCycled"><code class="xref py py-obj docutils literal"><span class="pre">TuneEchoCycled</span></code></a>(**kwargs)</td>
+<td>For tuning on signal.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Experiments.echo_T2.html#Experiments.echo_T2" title="Experiments.echo_T2"><code class="xref py py-obj docutils literal"><span class="pre">echo_T2</span></code></a>(**kwargs)</td>
+<td>This is modified from B1_se to run a series of echoes with increases interpulse delay.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="Experiments.split_inv_rec.html#Experiments.split_inv_rec" title="Experiments.split_inv_rec"><code class="xref py py-obj docutils literal"><span class="pre">split_inv_rec</span></code></a>(**kwargs)</td>
+<td>This implements a split inversion recovery program &#8211; which is four pulses:</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Experiments</a><ul>
+<li><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">Experiments</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/Experiments.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, John Franck, Drew Dolgert, Curt Dunnam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>

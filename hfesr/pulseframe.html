@@ -1,0 +1,739 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Define a Pulse Frame &mdash; 95 GHz ESR Software 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="95 GHz ESR Software 0.9 documentation" href="index.html" />
+    <link rel="next" title="Coding" href="design.html" />
+    <link rel="prev" title="Analysis" href="analysis.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="design.html" title="Coding"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="analysis.html" title="Analysis"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="define-a-pulse-frame">
+<h1>Define a Pulse Frame<a class="headerlink" href="#define-a-pulse-frame" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Each experiment sends a series of RF pulses. The TTL signal generator
+card in the computer controls when these pulses are sent, as well
+as when the receiver is on, when the receiver is protected, the
+trigger timing, and more. A <em>pulse frame</em> is value of all of these
+signals, as determined from the initial series of pulses.</p>
+<p>The input pulses are defined by the pulse start, duration, and phase.
+Given those values, the pulse frame code needs to determine how
+to set the value of all of the signals sent by the card to the
+experiment. The card has between 12 and 24 separate TTL channels
+which can be either on or off at any time. (Sometimes this is called
+high or low. In the code, it is True or False.)</p>
+<p>Wulf Hofbauer came up with a way to describe the pulse frame
+as a series of constraints, which are a series of hints to a
+timing module about when signals should be high or low. For instance,
+given a single pulse&#8217;s start, duration and phase, a constraint
+might insist that the signals which define the pulse&#8217;s phase
+be set at least 4 ns before the pulse&#8217;s start.</p>
+<p>Why would this routing use constraints instead of specifying exactly
+when each signal should be high or low? There are limitations in
+the signal generation cards and other equipment. The SpinCore
+PulseBlaster signal generator encodes its signals as a program
+that has a limited length. By using constraints, Wulf could write
+code that would compress commands to the card in order to limit
+program length so it fit on the SpinCore card. For any card,
+the response time of the signal generator and other equipment
+can mean that setting signals earlier can be advantageous, as long
+as it doesn&#8217;t conflict with needs of a neighboring pulse. This, too,
+can be negotiated by the timing module.</p>
+<p>There are two versions of the pulse frame code for the two
+signal generators, the SpinCore PulseBlaster and the
+Chase DWG11000. The following describes the Chase
+pulse frame. Select the SpinCore card by changing
+the <code class="docutils literal"><span class="pre">95GHz.cfg</span></code> file to point to the pulseblaster
+and editing <code class="docutils literal"><span class="pre">acert.hfesr.PBTiming.</span></code></p>
+</div>
+<div class="section" id="structure-of-the-pulse-frame">
+<h2>Structure of the Pulse Frame<a class="headerlink" href="#structure-of-the-pulse-frame" title="Permalink to this headline">¶</a></h2>
+<p>The general structure of code to generate a pulse frame is
+to loop through pulses, setting per-pulse constraints, then
+to set per-frame constraints:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TriggerTime</span><span class="o">=</span><span class="mi">65536</span>
+<span class="k">def</span> <span class="nf">PulsesToConstraints</span><span class="p">(</span><span class="n">pulses</span><span class="p">,</span> <span class="n">add_jmp</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">c</span><span class="o">=</span><span class="n">Constraints</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">pulse</span> <span class="ow">in</span> <span class="n">pulses</span><span class="p">:</span>
+        <span class="n">pulse_start</span><span class="o">=</span><span class="n">pulse</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">TriggerTime</span>
+        <span class="n">pulse_finish</span><span class="o">=</span><span class="n">pulse_start</span> <span class="o">+</span> <span class="n">pulse</span><span class="o">.</span><span class="n">duration</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">PULSE</span><span class="p">,</span><span class="bp">True</span><span class="p">,</span><span class="n">pulse_start</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">PULSE</span><span class="p">,</span><span class="bp">False</span><span class="p">,</span><span class="n">pulse_finish</span><span class="p">)</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">RECIEVER</span><span class="p">,</span><span class="bp">True</span><span class="p">,</span><span class="n">pulses</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">finish</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>The constants, such as TriggerTime, are sometimes called vernier
+adjustments.
+A full example is in <code class="xref py py-mod docutils literal"><span class="pre">PulseFrame</span></code>.</p>
+</div>
+<div class="section" id="how-to-set-constraints">
+<h2>How to Set Constraints<a class="headerlink" href="#how-to-set-constraints" title="Permalink to this headline">¶</a></h2>
+<p>There are two kinds of constraints, flips and fixes.</p>
+<dl class="method">
+<dt id="Timing.Constraints.flip">
+<code class="descclassname">Constraints.</code><code class="descname">flip</code><span class="sig-paren">(</span><em>channel</em>, <em>value</em>, <em>when</em><span class="sig-paren">)</span><a class="headerlink" href="#Timing.Constraints.flip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A flip constraint states that, at clock time when,
+the channel, specified by a member of the Signal enum,
+will flip from its previous state to the state Value.
+This implies it used to be at the opposite state, at least
+at time when-1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>channel</strong> &#8211; Any immutable key to specify an output channel</li>
+<li><strong>value</strong> &#8211; True or False to specify a high or low TTL signal</li>
+<li><strong>when</strong> &#8211; Integer time, in nanoseconds when value must be set</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Timing.Constraints.fix">
+<code class="descclassname">Constraints.</code><code class="descname">fix</code><span class="sig-paren">(</span><em>channel</em>, <em>value</em>, <em>start</em>, <em>finish</em><span class="sig-paren">)</span><a class="headerlink" href="#Timing.Constraints.fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>A fixed constraints requires that the given channel
+must be equal to the value,
+True or False, from time start up to, but not including,
+the time finish.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>channel</strong> &#8211; Any immutable key to specify an output channel</li>
+<li><strong>value</strong> &#8211; True or False to specify a high or low TTL signal</li>
+<li><strong>start</strong> &#8211; Integer time, in nanoseconds when value must be set</li>
+<li><strong>finish</strong> &#8211; Integer time, in nanoseconds when value may change</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>As far as the Constraints class is concerned, the name of the channel
+can be anything, as long as it is consistent. You could use
+a simple enum:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">PULSE</span><span class="p">,</span> <span class="n">EIK</span><span class="p">,</span> <span class="n">TRIGGER</span><span class="p">,</span> <span class="n">QUAD</span><span class="p">,</span> <span class="n">INPHASE</span><span class="p">,</span> <span class="n">RECEIVER</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output bits from the signal generator, are determined separately
+by a map from the channel to the bit.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">_bit_assignments</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">PULSE</span> <span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="n">EIK</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">TRIGGER</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">QUAD</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">INPHASE</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">RECEIVER</span> <span class="p">:</span> <span class="mi">5</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>When the pulse frame generation method sets constraints,
+those constraints must be valid. The rules for valid or invalid
+constraints are in the Timing module.</p>
+<p>Two constraints may overlap only if they are both fixes with the
+same value or if they are flips at exactly the same time and same
+value.</p>
+<p>Whether one constraint may follow another is determined by whether
+the two True or False values agree or disagree.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="22%" />
+<col width="19%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">first</th>
+<th class="head">second</th>
+<th class="head">agree</th>
+<th class="head">permissible</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>flip</td>
+<td>flip</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr class="row-odd"><td>flip</td>
+<td>flip</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr class="row-even"><td>flip</td>
+<td>fix</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr class="row-odd"><td>flip</td>
+<td>fix</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td>fix</td>
+<td>flip</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr class="row-odd"><td>fix</td>
+<td>flip</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr class="row-even"><td>fix</td>
+<td>fix</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr class="row-odd"><td>fix</td>
+<td>fix</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>One interesting choice here is that you cannot first fix a channel
+to True, then have its next constraint in time be that it should
+flip to become True. Some constraint, between those, must make
+the channel False.</p>
+<p>What happens when there is a fixed constraint setting a channel False
+followed by one setting a channel True, and between lies some
+undetermined time? This is decided by the Constraint method
+convert_channel.</p>
+<dl class="method">
+<dt id="Timing.Constraints.convert_channel">
+<code class="descclassname">Constraints.</code><code class="descname">convert_channel</code><span class="sig-paren">(</span><em>channel</em>, <em>all_start</em>, <em>all_finish</em><span class="sig-paren">)</span><a class="headerlink" href="#Timing.Constraints.convert_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes channels have been validated so that there are
+no conflicts among constraints within a channel. This then
+extends the constraints to fill from start to finish times
+and converts all constraints to fixed values that cover the
+whole range.</p>
+<p>This method decides that, given two fixed constraints
+in a row, the signal value should change halfway between.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="what-files-to-modify">
+<h2>What Files to Modify<a class="headerlink" href="#what-files-to-modify" title="Permalink to this headline">¶</a></h2>
+<p>If you want to modify the pulse frame for all experiments,
+modify the module acert.hfesr.PulseFrame. This is the default
+source for the PulsesToConstraints function.</p>
+<ol class="arabic">
+<li><p class="first">Check out the hfesr code.</p>
+</li>
+<li><p class="first">Modify hfesr/PulseFrame.py</p>
+</li>
+<li><p class="first">Re-install the hfesr code with:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo python setup.py install
+</pre></div>
+</div>
+</li>
+</ol>
+<p>If you are tuning the pulse frame, so that it is inconvenient or
+unwanted to modify the system-wide version, the other way to
+modify the pulse frame is to specify supply
+the ChaseGenerator module with a new PulsesToConstraints function.
+The Spectrometer class has a method to set the PulsesToConstraints
+function.</p>
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.set_pulse_frame">
+<code class="descclassname">Spectrometer.</code><code class="descname">set_pulse_frame</code><span class="sig-paren">(</span><em>pulse_frame</em><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.set_pulse_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a custom function to generate a pulse frame from a list
+of RF pulses. This function should act like
+PulseFrame.PulsesToConstraints.
+:param pulse_frame: a function which accepts pulses and addjmp.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="writing-constraints">
+<h2>Writing Constraints<a class="headerlink" href="#writing-constraints" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">ChasePulseProgram</span></code> module knows how to use a pulse
+frame to create constraints and then wrote those values
+to the Chase signal generator. If you wanted to examine the
+constraints in more detail, there are two interfaces on the
+<code class="xref py py-class docutils literal"><span class="pre">Timing.Constraints</span></code> class to write the constraints.</p>
+<p>First, remember that the constraints are set as hints, then
+converted by <a class="reference internal" href="#Timing.Constraints.convert_channel" title="Timing.Constraints.convert_channel"><code class="xref py py-class docutils literal"><span class="pre">convert_channel</span></code></a> so that
+the constraints completely specify signal values from a start
+to a finish time. As a result, if you print constraints before
+they are converted, then you will see your original hints.
+If you print them after, you will see that every constraint
+is a fix constraint defining an exact value at all times.</p>
+<p>There are two ways the <code class="xref py py-class docutils literal"><span class="pre">Timing.Constraints</span></code> class
+presents its constraints: per-channel and per-transition.</p>
+<dl class="method">
+<dt id="Timing.Constraints.write_array">
+<code class="descclassname">Constraints.</code><code class="descname">write_array</code><span class="sig-paren">(</span><em>out</em>, <em>finish=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Timing.Constraints.write_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes constraints in time-order,
+specifying every point in time that there is
+a transition where any of the constraints change.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>out</strong> &#8211; This is an object which has two functions,
+<cite>out.transition_cnt(duration_of_constraints)</cite> to tel
+the out object the difference between finish and start
+times, and <cite>out.write(state, start, finish)</cite> where
+the state is a dictionary where keys are channels and values
+are True or False, and the state is defined up to,
+but not including the finish time.</td>
+</tr>
+</tbody>
+</table>
+<p>Two examples of objects to pass as the out parameter are
+<code class="xref py py-class docutils literal"><span class="pre">Timing.TransitionWriter</span></code>, which writes to a stream, and
+<code class="xref py py-class docutils literal"><span class="pre">ChasePulseProgram.ArrayWriter</span></code>, which writes to
+a numpy array.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Timing.Constraints.write_bychannel">
+<code class="descclassname">Constraints.</code><code class="descname">write_bychannel</code><span class="sig-paren">(</span><em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#Timing.Constraints.write_bychannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes constraints for each channel, one
+channel at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>out</strong> &#8211; This is a class with two methods,
+<cite>out.change_channel(channel)</cite> to specify the next channel
+that will be written, and <cite>out.write(type,value,start,finish)</cite>
+to specify the constraint type, value, start and finish.</td>
+</tr>
+</tbody>
+</table>
+<p>Two examples of this writer are
+<code class="xref py py-class docutils literal"><span class="pre">Timing.GnuplotWriter</span></code> and
+<code class="xref py py-class docutils literal"><span class="pre">Timing.ByChannelWriter</span></code>, which writes to any stream.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="pulse-pattern-generation-for-chase-dwg11000">
+<h2>Pulse/Pattern Generation for Chase DWG11000<a class="headerlink" href="#pulse-pattern-generation-for-chase-dwg11000" title="Permalink to this headline">¶</a></h2>
+<p>The Chase DWG11000 signal generator can set 12 TTL outputs with
+1 ns resolution. It is a modified version of a Chase DA11000, with the
+DA converter removed and amplifiers for the digital signals. The
+company also provided a Linux version of their driver, which is usually
+only Windows.</p>
+<p>There is a manual for the DA11000 which describes its driver. Because
+the DWG11000 is already digital, there is no need for the SetMarkers
+call, which tells the card when to set a single output trigger signal.</p>
+<p>The card runs in a trigger mode. Setting a trigger mode of (1,0,0)
+just clears the card, telling it to stop sending whatever it was
+sending before and initializing its memory. The other two trigger
+modes are continuous looping or waiting for a trigger to run. That
+trigger it waits for can either be an external trigger, from a cable
+plugged into the card, or a soft trigger, which a program initiates
+by calling the Chase driver&#8217;s SetSoftTrigger function.</p>
+<p>Unlike the PulseBlaster, which executes a program that describes what
+signals to send, the Chase card reads segments of memory. A program
+sends it multiple segments, where each segment contains a pointer to
+an array of uint16_t, and the length of the array is a multiple of
+64, called a <em>segment size.</em> There can be multiple segments, and
+each segment has values that tell the card the index of the next
+segment to run, whether to wait for a trigger before running the
+next segment, and how many times to rerun that segment before
+continuing.</p>
+<p>When the Chase card loops, resending a signal, the timing of its
+loop is limited by the 64 ns segment size. This restricts
+permitted frequencies.</p>
+<p>Advice from Chase suggests that programs avoid using the first
+segment because it is special. For instance, there is no way to make
+the firs segment loop a specific number of times because looping
+of a segment is specified by the previous segment to run.</p>
+<p>There is no way to make a single segment that loops a fixed number
+of times and stops because a looping segment cannot also have its
+stop-on-trigger bit set. The workaround for this, used in the code,
+is always to create three segments:</p>
+<ul class="simple">
+<li>First segment of 64 DWORDS, all set to zero</li>
+<li>Second segment, which loops the given number of times</li>
+<li>Third segment, set to the final value, which stops when it finishes.</li>
+</ul>
+<p>This approach is found in the class <code class="xref py py-class docutils literal"><span class="pre">ChaseGenerator.ChaseCard</span></code>.</p>
+</div>
+<div class="section" id="pulse-timing-signal-generation-for-spincore-pulseblaster">
+<h2>Pulse/Timing Signal Generation for SpinCore PulseBlaster<a class="headerlink" href="#pulse-timing-signal-generation-for-spincore-pulseblaster" title="Permalink to this headline">¶</a></h2>
+<p>The timing system is capable of generating complex sequences of pulses and
+control signals.  The interface software provides a framework to generate such
+sequences from a set of constraints (conditions for the output signals that
+have to be fulfilled), assuring mutual compatibility of constraints and
+compatibility with hardware limitations. The software attempts to minimize the
+number of generated pattern transitions, as there is a limit to how many
+transitions the hardware can handle.[#f1]_</p>
+<p>The software, contained in the module <code class="xref py py-mod docutils literal"><span class="pre">Timing</span></code> and imported by the
+:mod`Spectrometer` module, can be used by higher level programs to
+implement almost arbitrarily complex experiments.  To ease programming, there
+are some convenience functions that allow the creation of a certain class of
+experiments with minimal programming overhead.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The timing system software uses internal calibration parameters to
+compensate propagation delays of signal cables. Changes in cabling
+will require recalibration for proper operation.</p>
+</div>
+<div class="section" id="compiling-a-pulse-sequence">
+<h3>Compiling a Pulse Sequence<a class="headerlink" href="#compiling-a-pulse-sequence" title="Permalink to this headline">¶</a></h3>
+<p>The following convenience function translates a pulse sequence to a program
+that can be executed by the pattern generator. The necessary signals to
+activate the high-power amplifier, control the phase shifters, enable/disable
+the receiver, and trigger the acquisition digitizers/averager are generated
+automatically from the list of desired pulses.</p>
+<p>All timing is specified in nanoseconds. Data acquisition is triggered at<span class="math">\(t=0\)</span>,
+and in most experiments, pulses will precede acquisition, i.e.pulses occur at
+times<span class="math">\(t&lt;0\)</span>. Pulses may occur up to several tens of microseconds before the
+start of the acquisition.</p>
+<p>A pulse is specified by a triple of numbers, comprising pulse starting time,
+pulse duration, and phase:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: p1=(-50, 8, 270)
+</pre></div>
+</div>
+<p>The example above would define an 8 ns long pulse, starting at<span class="math">\(t=-50\)</span>ns
+relative to the data acquisition trigger signal, and having a phase
+of:math:270^circ`.[#f2]_</p>
+<p>A pulse sequence is specified by a list of individual pulses:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: pl=[(-50, 8, 270), (-25, 16, 90)]
+</pre></div>
+</div>
+<p>This list would represent an 8 ns pulse at<span class="math">\(t=-50`~ns with a phase
+of\ :math:`270^\circ\)</span>, followed by a 16~ns pulse at<span class="math">\(t=-25`~ns with
+a phase of\ :math:`90^\circ\)</span>.</p>
+<p>This pulse list can then be compiled into a pulse program:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: pp=Spectrometer.compile_pulse_program(pl, 64, 5000)
+</pre></div>
+</div>
+<p>This program, when executed, would generate 64 iterations of the pulse
+sequence, at a repetition rate of 5000~:math:<cite>s^{-1}</cite>. The program is represented
+as a list of PulseBlaster VLIW operation codes and can be listed to aid
+in debugging:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: pp
+[
+LOOP 1, 63, 0x000000,
+CONT 1, 0, 0x800000,
+LDLY 1, 3123, 0x000000,
+LDLY 1, 898, 0x800000,
+LDLY 1, 62, 0x000040,
+CONT 1, 0, 0x840440,
+CONT 1, 0, 0x0c044c,
+CONT 6, 0, 0x840448,
+CONT 11, 0, 0x04044a,
+CONT 1, 0, 0x84044b,
+LDLY 1, 8395, 0x84044b,
+CONT 5, 0, 0x84044b,
+ENDL 2, 0, 0x000000,
+STOP]
+</pre></div>
+</div>
+<p>If the pulse program cannot be generated, the
+<code class="docutils literal"><span class="pre">compile_pulse_program</span></code> function will return no value
+(<code class="docutils literal"><span class="pre">None</span></code>). This would typically happen if the desired pulses lead to
+conflicting constraints on the generated patterns, and the user program code
+should check for this condition.[#f3]_</p>
+</div>
+<div class="section" id="running-a-pulse-program">
+<h3>Running a Pulse Program<a class="headerlink" href="#running-a-pulse-program" title="Permalink to this headline">¶</a></h3>
+<p>Once a pulse program has been generated, it can be executed:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: Spectrometer.run_pulse_program(pp)
+</pre></div>
+</div>
+<p>This will load the program code into the pattern generator and start execution.
+The function returns immediately, i.e.while the pulse program is still
+running. <strong>There are no checks for the validity of the program.* Note
+that the hardware does not allow to check whether a program is still running or
+has terminated. It is also not possible to abort a running sequence in a safe
+way (without potentially generating spurious high-power pulses). A faulty
+program could potentially result in hardware damage, in particular when the
+high-power amplifier is activated. **If an out of control program needs
+to be aborted, the high power amplifier should be disabled first.</strong></p>
+</div>
+<div class="section" id="programming-considerations">
+<h3>Programming Considerations<a class="headerlink" href="#programming-considerations" title="Permalink to this headline">¶</a></h3>
+<p>Since there is no documented way to check the status of the pattern generator
+hardware, application software must keep track of it. In particular,
+<strong>software should wait for the calculated duration of a pulse sequence or
+verify in another way that the pulse program has terminated before
+reprogramming the pattern generator.</strong></p>
+<p>Most pulsed experiments require pulse sequences with varying timing and phase
+combinations. Due to the multiple timing constraints involved in the generation
+of the proper control signals, it is difficult to predict if nonrealizable
+timing/phase combinations will occur during such an experiment. To prevent this
+problem from showing up in the middle of a lengthy experiment, it is advisable
+to check the validity of all timing/phase combinations in advance by compiling
+them into pulse programs.  This technique is commonly referred to as
+<em>preflight checking.</em> Keep in mind that, while the compilation process
+for a typical pulse sequence may take only a millisecond, phase-cycled
+experiments frequently require tens of thousands of individual pulse programs,
+and a complete preflight check could last up to a minute or even longer.</p>
+<p>For generating more complex timing sequences than provided by the
+<code class="docutils literal"><span class="pre">compile_pulse_program</span></code> function, the reader is referred to the
+source code of the <code class="xref py py-mod docutils literal"><span class="pre">Timing</span></code> module and its embedded documentation. The
+framework for adding/checking constraints, generating output patterns and
+translating them into pulse programs makes very few assumptions about timing
+relations between various signals, allowing almost unlimited flexibility.</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>In tests using randomly generated
+sequences, hundreds of pulses could be accomodated without exhausting the
+pattern generator program memory. Due to the complex timing relations
+between various signals, the allowable number of pulses may depend drastically
+on seemingly minor details of the desired sequence.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>All timing must be specified in integer multiples of
+1ns. Allowed phases are<span class="math">\(0^\circ\)</span>, <span class="math">\(90^\circ\)</span>,
+<span class="math">\(180^\circ\)</span>, and<span class="math">\(270^\circ\)</span>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[3]</td><td>Presently, the EIK amplifier is
+operating with a fixed on-time (<span class="math">\(\approx 1~\mu s\)</span>), and the entire pulse
+sequence has to fall within this time window. The software does not enforce
+this constraint, as the EIK behavior is scheduled to be changed in the near
+future. There is no risk of damage if this limitation is exceeded.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="module-PulseFrameAssertion">
+<span id="creating-a-pulse-frame-from-directives"></span><h2>Creating a Pulse Frame from Directives<a class="headerlink" href="#module-PulseFrameAssertion" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pulseframeassertion">
+<h3><a class="reference internal" href="#module-PulseFrameAssertion" title="PulseFrameAssertion"><code class="xref py py-mod docutils literal"><span class="pre">PulseFrameAssertion</span></code></a><a class="headerlink" href="#pulseframeassertion" title="Permalink to this headline">¶</a></h3>
+<p>This file can construct a PulseFrame from a configuration file
+so that you can store a record of vernier adjustments.
+It makes a PulsesToConstraints function from a dictionary
+of assertions about variable values and constraints.</p>
+<p>Each entry in the dictionary is either a simple value, which means
+it defines a variable, or a dictionary of entries to describe
+a constraint, or rule. Some of those constraints are applied
+for each pulse, and some of them apply to the whole series
+of pulses, for instance using min and max pulse values.
+The code orders those constraints according to their dependencies
+and writes a function which accepts a pulse list as an
+argument and returns a list of constraints.</p>
+<dl class="function">
+<dt id="PulseFrameAssertion.CreatePulseFrameFunction">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">CreatePulseFrameFunction</code><span class="sig-paren">(</span><em>all_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.CreatePulseFrameFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>This writes Python code to create a pulse frame from a list of
+pulses. The code it writes will be very similar to
+<code class="docutils literal"><span class="pre">PulseFrame.PulsesToConstraints</span></code>.
+The input is a dictionary where entries are either variables
+or constraint rules.</p>
+<p>Dictionary with variables:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;TriggerTime&#39;</span> <span class="p">:</span> <span class="s1">&#39;65536&#39;</span><span class="p">,</span> <span class="s1">&#39;TimeOffset&#39;</span> <span class="p">:</span> <span class="s1">&#39;TriggerTime-83&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Dictionary with rules:</p>
+<div class="highlight-python"><div class="highlight"><pre>a = { &#39;trigger&#39; : { &#39;type&#39;:&#39;flip&#39;, &#39;channel&#39;:&#39;Trigger&#39;,&#39;value&#39;:&#39;True&#39;,
+                    &#39;start&#39;:&#39;TriggerTime+1&#39;},
+      &#39;pulse_on: {&#39;type&#39;:&#39;flip&#39;, &#39;channel&#39;:&#39;Pulse&#39;, &#39;value&#39;:&#39;True&#39;,
+                  &#39;start&#39;:&#39;pulse.start+TimeOffset&#39;},
+      &#39;pulse_off:{&#39;type&#39;:&#39;flip&#39;, &#39;channel&#39;:&#39;Pulse&#39;, &#39;value&#39;:&#39;False&#39;,
+                  &#39;start&#39;:&#39;pulse_on.start+pulse.duration&#39;},
+    }
+</pre></div>
+</div>
+<p>Predefined variables are pulse.idx, pulse.start,
+pulse.duration, and pulse.phase for each pulse, addjmp,
+pulses[0] for the first pulse, and pulses[-1] for the last pulse.</p>
+<p>Note that the variables and rule definitions can refer to each
+other. The pulse_off rule refers to pulse_on.start, the start time
+of the pulse_on rule. Each rule defines a rule.start and rule.finish.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A string you can exec to define a PulsesToConstraints function.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="PulseFrameAssertion.CreatePulseFrameYaml">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">CreatePulseFrameYaml</code><span class="sig-paren">(</span><em>stream</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.CreatePulseFrameYaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a YAML file, construct and return a PulsesToConstraints function.
+:param stream: Usually going to be the result of open(&#8216;file.yaml&#8217;).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PulseFrameAssertion.dep_single">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">dep_single</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.dep_single" title="Permalink to this definition">¶</a></dt>
+<dd><p>What are the dependencies in this line of code?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PulseFrameAssertion.every_pulse">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">every_pulse</code><span class="sig-paren">(</span><em>name</em>, <em>ruledeps</em>, <em>root</em>, <em>seen=None</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.every_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look through the list of dependencies to find whether the
+given name ultimately depends on the root variable.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PulseFrameAssertion.isrule">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">isrule</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.isrule" title="Permalink to this definition">¶</a></dt>
+<dd><p>The given dictionary item is a rule if it is, itself
+a dictionary and contains the key &#8220;type&#8221;. Else it&#8217;s a variable.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PulseFrameAssertion.order_assignments">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">order_assignments</code><span class="sig-paren">(</span><em>rule_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.order_assignments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a dictionary of dependencies, make an ordered list
+about which ones go first. Make the ordering stable, too.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PulseFrameAssertion.write_rules">
+<code class="descclassname">PulseFrameAssertion.</code><code class="descname">write_rules</code><span class="sig-paren">(</span><em>msg</em>, <em>pulse_order</em>, <em>rules</em>, <em>start_finish</em>, <em>start_indent</em><span class="sig-paren">)</span><a class="headerlink" href="#PulseFrameAssertion.write_rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write rules and variables.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Define a Pulse Frame</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#structure-of-the-pulse-frame">Structure of the Pulse Frame</a></li>
+<li><a class="reference internal" href="#how-to-set-constraints">How to Set Constraints</a></li>
+<li><a class="reference internal" href="#what-files-to-modify">What Files to Modify</a></li>
+<li><a class="reference internal" href="#writing-constraints">Writing Constraints</a></li>
+<li><a class="reference internal" href="#pulse-pattern-generation-for-chase-dwg11000">Pulse/Pattern Generation for Chase DWG11000</a></li>
+<li><a class="reference internal" href="#pulse-timing-signal-generation-for-spincore-pulseblaster">Pulse/Timing Signal Generation for SpinCore PulseBlaster</a><ul>
+<li><a class="reference internal" href="#compiling-a-pulse-sequence">Compiling a Pulse Sequence</a></li>
+<li><a class="reference internal" href="#running-a-pulse-program">Running a Pulse Program</a></li>
+<li><a class="reference internal" href="#programming-considerations">Programming Considerations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-PulseFrameAssertion">Creating a Pulse Frame from Directives</a><ul>
+<li><a class="reference internal" href="#pulseframeassertion"><code class="docutils literal"><span class="pre">PulseFrameAssertion</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="analysis.html"
+                        title="previous chapter">Analysis</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="design.html"
+                        title="next chapter">Coding</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pulseframe.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="design.html" title="Coding"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="analysis.html" title="Analysis"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, John Franck, Drew Dolgert, Curt Dunnam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>

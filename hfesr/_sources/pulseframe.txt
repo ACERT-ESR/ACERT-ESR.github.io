@@ -1,0 +1,390 @@
+====================
+Define a Pulse Frame
+====================
+
+---------------------
+Introduction
+---------------------
+
+Each experiment sends a series of RF pulses. The TTL signal generator
+card in the computer controls when these pulses are sent, as well
+as when the receiver is on, when the receiver is protected, the 
+trigger timing, and more. A *pulse frame* is value of all of these
+signals, as determined from the initial series of pulses.
+
+The input pulses are defined by the pulse start, duration, and phase.
+Given those values, the pulse frame code needs to determine how
+to set the value of all of the signals sent by the card to the
+experiment. The card has between 12 and 24 separate TTL channels
+which can be either on or off at any time. (Sometimes this is called
+high or low. In the code, it is True or False.)
+
+Wulf Hofbauer came up with a way to describe the pulse frame
+as a series of constraints, which are a series of hints to a
+timing module about when signals should be high or low. For instance,
+given a single pulse's start, duration and phase, a constraint
+might insist that the signals which define the pulse's phase
+be set at least 4 ns before the pulse's start.
+
+Why would this routing use constraints instead of specifying exactly
+when each signal should be high or low? There are limitations in
+the signal generation cards and other equipment. The SpinCore
+PulseBlaster signal generator encodes its signals as a program
+that has a limited length. By using constraints, Wulf could write
+code that would compress commands to the card in order to limit
+program length so it fit on the SpinCore card. For any card,
+the response time of the signal generator and other equipment
+can mean that setting signals earlier can be advantageous, as long
+as it doesn't conflict with needs of a neighboring pulse. This, too,
+can be negotiated by the timing module.
+
+There are two versions of the pulse frame code for the two
+signal generators, the SpinCore PulseBlaster and the 
+Chase DWG11000. The following describes the Chase
+pulse frame. Select the SpinCore card by changing
+the ``95GHz.cfg`` file to point to the pulseblaster 
+and editing ``acert.hfesr.PBTiming.``
+
+----------------------------
+Structure of the Pulse Frame
+----------------------------
+
+The general structure of code to generate a pulse frame is
+to loop through pulses, setting per-pulse constraints, then
+to set per-frame constraints::
+    
+    TriggerTime=65536
+    def PulsesToConstraints(pulses, add_jmp=None):
+        c=Constraints()
+        for pulse in pulses:
+            pulse_start=pulse.start + TriggerTime
+            pulse_finish=pulse_start + pulse.duration
+            c.flip(PULSE,True,pulse_start)
+            c.flip(PULSE,False,pulse_finish)
+        c.flip(RECIEVER,True,pulses[-1].finish)
+        return c
+
+The constants, such as TriggerTime, are sometimes called vernier
+adjustments.
+A full example is in :mod:`PulseFrame`.
+
+----------------------
+How to Set Constraints
+----------------------
+
+There are two kinds of constraints, flips and fixes.
+
+.. automethod:: Timing.Constraints.flip
+
+.. automethod:: Timing.Constraints.fix
+
+As far as the Constraints class is concerned, the name of the channel
+can be anything, as long as it is consistent. You could use
+a simple enum::
+
+    PULSE, EIK, TRIGGER, QUAD, INPHASE, RECEIVER = range(6)
+
+The output bits from the signal generator, are determined separately
+by a map from the channel to the bit.::
+
+    _bit_assignments = {
+        PULSE : 7, EIK : 2, TRIGGER : 1,
+        QUAD : 3, INPHASE : 4, RECEIVER : 5
+        }
+
+When the pulse frame generation method sets constraints,
+those constraints must be valid. The rules for valid or invalid
+constraints are in the Timing module.
+
+Two constraints may overlap only if they are both fixes with the
+same value or if they are flips at exactly the same time and same
+value.
+
+Whether one constraint may follow another is determined by whether
+the two True or False values agree or disagree.
+
+===== ====== ===== ===========
+first second agree permissible
+===== ====== ===== ===========
+flip  flip   yes   no
+flip  flip   no    yes
+flip  fix    yes   yes
+flip  fix    no    no
+fix   flip   yes   no
+fix   flip   no    yes
+fix   fix    yes   yes
+fix   fix    yes   yes
+===== ====== ===== ===========
+
+One interesting choice here is that you cannot first fix a channel
+to True, then have its next constraint in time be that it should
+flip to become True. Some constraint, between those, must make
+the channel False.
+
+What happens when there is a fixed constraint setting a channel False
+followed by one setting a channel True, and between lies some
+undetermined time? This is decided by the Constraint method
+convert_channel.
+
+.. automethod:: Timing.Constraints.convert_channel
+
+--------------------
+What Files to Modify
+--------------------
+
+If you want to modify the pulse frame for all experiments,
+modify the module acert.hfesr.PulseFrame. This is the default
+source for the PulsesToConstraints function.
+
+#. Check out the hfesr code.
+#. Modify hfesr/PulseFrame.py
+#. Re-install the hfesr code with::
+
+    sudo python setup.py install
+
+If you are tuning the pulse frame, so that it is inconvenient or
+unwanted to modify the system-wide version, the other way to
+modify the pulse frame is to specify supply
+the ChaseGenerator module with a new PulsesToConstraints function.
+The Spectrometer class has a method to set the PulsesToConstraints
+function.
+
+.. automethod:: Spectrometer.Spectrometer.set_pulse_frame
+
+-------------------
+Writing Constraints
+-------------------
+
+The :mod:`ChasePulseProgram` module knows how to use a pulse
+frame to create constraints and then wrote those values
+to the Chase signal generator. If you wanted to examine the
+constraints in more detail, there are two interfaces on the
+:class:`Timing.Constraints` class to write the constraints.
+
+First, remember that the constraints are set as hints, then
+converted by :class:`~Timing.Constraints.convert_channel` so that
+the constraints completely specify signal values from a start
+to a finish time. As a result, if you print constraints before
+they are converted, then you will see your original hints.
+If you print them after, you will see that every constraint
+is a fix constraint defining an exact value at all times.
+
+There are two ways the :class:`Timing.Constraints` class
+presents its constraints: per-channel and per-transition.
+
+.. automethod:: Timing.Constraints.write_array
+
+.. automethod:: Timing.Constraints.write_bychannel
+
+
+--------------------------------------------
+Pulse/Pattern Generation for Chase DWG11000
+--------------------------------------------
+
+The Chase DWG11000 signal generator can set 12 TTL outputs with
+1 ns resolution. It is a modified version of a Chase DA11000, with the 
+DA converter removed and amplifiers for the digital signals. The
+company also provided a Linux version of their driver, which is usually
+only Windows.
+
+There is a manual for the DA11000 which describes its driver. Because
+the DWG11000 is already digital, there is no need for the SetMarkers
+call, which tells the card when to set a single output trigger signal.
+
+The card runs in a trigger mode. Setting a trigger mode of (1,0,0)
+just clears the card, telling it to stop sending whatever it was 
+sending before and initializing its memory. The other two trigger
+modes are continuous looping or waiting for a trigger to run. That
+trigger it waits for can either be an external trigger, from a cable
+plugged into the card, or a soft trigger, which a program initiates
+by calling the Chase driver's SetSoftTrigger function.
+
+Unlike the PulseBlaster, which executes a program that describes what
+signals to send, the Chase card reads segments of memory. A program
+sends it multiple segments, where each segment contains a pointer to 
+an array of uint16_t, and the length of the array is a multiple of
+64, called a *segment size.* There can be multiple segments, and
+each segment has values that tell the card the index of the next
+segment to run, whether to wait for a trigger before running the
+next segment, and how many times to rerun that segment before
+continuing.
+
+When the Chase card loops, resending a signal, the timing of its
+loop is limited by the 64 ns segment size. This restricts
+permitted frequencies.
+
+Advice from Chase suggests that programs avoid using the first
+segment because it is special. For instance, there is no way to make
+the firs segment loop a specific number of times because looping
+of a segment is specified by the previous segment to run.
+
+There is no way to make a single segment that loops a fixed number
+of times and stops because a looping segment cannot also have its
+stop-on-trigger bit set. The workaround for this, used in the code,
+is always to create three segments:
+
+* First segment of 64 DWORDS, all set to zero
+
+* Second segment, which loops the given number of times
+
+* Third segment, set to the final value, which stops when it finishes.
+
+This approach is found in the class :class:`ChaseGenerator.ChaseCard`.
+
+
+---------------------------------------------------------
+Pulse/Timing Signal Generation for SpinCore PulseBlaster
+---------------------------------------------------------
+
+The timing system is capable of generating complex sequences of pulses and
+control signals.  The interface software provides a framework to generate such
+sequences from a set of constraints (conditions for the output signals that
+have to be fulfilled), assuring mutual compatibility of constraints and
+compatibility with hardware limitations. The software attempts to minimize the
+number of generated pattern transitions, as there is a limit to how many
+transitions the hardware can handle.[#f1]_
+
+The software, contained in the module :mod:`Timing` and imported by the
+:mod`Spectrometer` module, can be used by higher level programs to
+implement almost arbitrarily complex experiments.  To ease programming, there
+are some convenience functions that allow the creation of a certain class of
+experiments with minimal programming overhead.
+
+.. note::
+
+   The timing system software uses internal calibration parameters to
+   compensate propagation delays of signal cables. Changes in cabling
+   will require recalibration for proper operation.
+
+
+Compiling a Pulse Sequence
+--------------------------------
+
+The following convenience function translates a pulse sequence to a program
+that can be executed by the pattern generator. The necessary signals to
+activate the high-power amplifier, control the phase shifters, enable/disable
+the receiver, and trigger the acquisition digitizers/averager are generated
+automatically from the list of desired pulses.
+
+All timing is specified in nanoseconds. Data acquisition is triggered at\ :math:`t=0`,
+and in most experiments, pulses will precede acquisition, i.e.\ pulses occur at
+times\ :math:`t<0`. Pulses may occur up to several tens of microseconds before the
+start of the acquisition.
+
+A pulse is specified by a triple of numbers, comprising pulse starting time,
+pulse duration, and phase::
+
+   95 GHz: p1=(-50, 8, 270)
+
+The example above would define an 8 ns long pulse, starting at\ :math:`t=-50`\ ns
+relative to the data acquisition trigger signal, and having a phase
+of\ :math:270^\circ`.[#f2]_
+
+A pulse sequence is specified by a list of individual pulses::
+
+   95 GHz: pl=[(-50, 8, 270), (-25, 16, 90)] 
+
+This list would represent an 8 ns pulse at\ :math:`t=-50`~ns with a phase
+of\ :math:`270^\circ`, followed by a 16~ns pulse at\ :math:`t=-25`~ns with
+a phase of\ :math:`90^\circ`.
+
+This pulse list can then be compiled into a pulse program::
+
+   95 GHz: pp=Spectrometer.compile_pulse_program(pl, 64, 5000)
+
+This program, when executed, would generate 64 iterations of the pulse
+sequence, at a repetition rate of 5000~:math:`s^{-1}`. The program is represented
+as a list of PulseBlaster VLIW operation codes and can be listed to aid
+in debugging::
+
+   95 GHz: pp
+   [
+   LOOP 1, 63, 0x000000, 
+   CONT 1, 0, 0x800000, 
+   LDLY 1, 3123, 0x000000, 
+   LDLY 1, 898, 0x800000, 
+   LDLY 1, 62, 0x000040, 
+   CONT 1, 0, 0x840440, 
+   CONT 1, 0, 0x0c044c, 
+   CONT 6, 0, 0x840448, 
+   CONT 11, 0, 0x04044a, 
+   CONT 1, 0, 0x84044b, 
+   LDLY 1, 8395, 0x84044b, 
+   CONT 5, 0, 0x84044b, 
+   ENDL 2, 0, 0x000000, 
+   STOP]
+
+If the pulse program cannot be generated, the
+``compile_pulse_program`` function will return no value
+(``None``). This would typically happen if the desired pulses lead to
+conflicting constraints on the generated patterns, and the user program code
+should check for this condition.[#f3]_
+
+Running a Pulse Program
+----------------------------
+
+Once a pulse program has been generated, it can be executed::
+
+   95 GHz: Spectrometer.run_pulse_program(pp)
+
+This will load the program code into the pattern generator and start execution.
+The function returns immediately, i.e.\ while the pulse program is still
+running. **There are no checks for the validity of the program.* Note
+that the hardware does not allow to check whether a program is still running or
+has terminated. It is also not possible to abort a running sequence in a safe
+way (without potentially generating spurious high-power pulses). A faulty
+program could potentially result in hardware damage, in particular when the
+high-power amplifier is activated. **If an out of control program needs
+to be aborted, the high power amplifier should be disabled first.**
+
+Programming Considerations
+-----------------------------
+
+Since there is no documented way to check the status of the pattern generator
+hardware, application software must keep track of it. In particular,
+**software should wait for the calculated duration of a pulse sequence or
+verify in another way that the pulse program has terminated before
+reprogramming the pattern generator.**
+
+Most pulsed experiments require pulse sequences with varying timing and phase
+combinations. Due to the multiple timing constraints involved in the generation
+of the proper control signals, it is difficult to predict if nonrealizable
+timing/phase combinations will occur during such an experiment. To prevent this
+problem from showing up in the middle of a lengthy experiment, it is advisable
+to check the validity of all timing/phase combinations in advance by compiling
+them into pulse programs.  This technique is commonly referred to as
+*preflight checking.* Keep in mind that, while the compilation process
+for a typical pulse sequence may take only a millisecond, phase-cycled
+experiments frequently require tens of thousands of individual pulse programs,
+and a complete preflight check could last up to a minute or even longer.
+
+For generating more complex timing sequences than provided by the
+``compile_pulse_program`` function, the reader is referred to the
+source code of the :mod:`Timing` module and its embedded documentation. The
+framework for adding/checking constraints, generating output patterns and
+translating them into pulse programs makes very few assumptions about timing
+relations between various signals, allowing almost unlimited flexibility.
+
+.. [#f1] In tests using randomly generated
+   sequences, hundreds of pulses could be accomodated without exhausting the
+   pattern generator program memory. Due to the complex timing relations
+   between various signals, the allowable number of pulses may depend drastically
+   on seemingly minor details of the desired sequence.
+
+.. [#f2] All timing must be specified in integer multiples of
+   1ns. Allowed phases are\ :math:`0^\circ`, :math:`90^\circ`,
+   :math:`180^\circ`, and\ :math:`270^\circ`.
+
+.. [#f3] Presently, the EIK amplifier is
+   operating with a fixed on-time (:math:`\approx 1~\mu s`), and the entire pulse
+   sequence has to fall within this time window. The software does not enforce
+   this constraint, as the EIK behavior is scheduled to be changed in the near
+   future. There is no risk of damage if this limitation is exceeded.
+
+
+---------------------------------------------
+Creating a Pulse Frame from Directives
+---------------------------------------------
+
+.. automodule:: PulseFrameAssertion
+    :members:

@@ -1,0 +1,6 @@
+test_experiments_pulseblaster
+=========================================
+
+.. currentmodule:: Experiments
+
+.. autofunction:: test_experiments_pulseblaster

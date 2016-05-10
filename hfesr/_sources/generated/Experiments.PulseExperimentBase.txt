@@ -1,0 +1,33 @@
+PulseExperimentBase
+===============================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: PulseExperimentBase
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PulseExperimentBase.__init__
+      ~PulseExperimentBase.acquire_data
+      ~PulseExperimentBase.bin_switch_blank
+      ~PulseExperimentBase.bin_switch_fieldsweep
+      ~PulseExperimentBase.get_spectrometer
+      ~PulseExperimentBase.plot
+      ~PulseExperimentBase.post_process_data
+      ~PulseExperimentBase.process_overrides
+      ~PulseExperimentBase.pull
+      ~PulseExperimentBase.push
+      ~PulseExperimentBase.set_field
+      ~PulseExperimentBase.simple_sequence
+   
+   
+
+   
+   
+   

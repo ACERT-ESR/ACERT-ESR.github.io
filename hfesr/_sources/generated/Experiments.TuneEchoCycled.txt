@@ -1,0 +1,31 @@
+TuneEchoCycled
+==========================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: TuneEchoCycled
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TuneEchoCycled.__init__
+      ~TuneEchoCycled.build_sequences
+      ~TuneEchoCycled.get_spectrometer
+      ~TuneEchoCycled.plot
+      ~TuneEchoCycled.plot_experiment
+      ~TuneEchoCycled.plot_pulses
+      ~TuneEchoCycled.process_overrides
+      ~TuneEchoCycled.run
+      ~TuneEchoCycled.set_field
+      ~TuneEchoCycled.simple_sequence
+   
+   
+
+   
+   
+   

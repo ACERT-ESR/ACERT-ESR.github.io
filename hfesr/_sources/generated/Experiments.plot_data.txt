@@ -1,0 +1,6 @@
+plot_data
+=====================
+
+.. currentmodule:: Experiments
+
+.. autofunction:: plot_data

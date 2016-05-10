@@ -1,0 +1,31 @@
+Loopback
+====================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: Loopback
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Loopback.__init__
+      ~Loopback.get_spectrometer
+      ~Loopback.get_status
+      ~Loopback.plot
+      ~Loopback.plot_experiment
+      ~Loopback.plot_pulses
+      ~Loopback.process_overrides
+      ~Loopback.run
+      ~Loopback.set_field
+      ~Loopback.simple_sequence
+   
+   
+
+   
+   
+   

@@ -1,0 +1,773 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Analysis &mdash; 95 GHz ESR Software 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="95 GHz ESR Software 0.9 documentation" href="index.html" />
+    <link rel="next" title="Define a Pulse Frame" href="pulseframe.html" />
+    <link rel="prev" title="split_inv_rec" href="generated/Experiments.split_inv_rec.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pulseframe.html" title="Define a Pulse Frame"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="generated/Experiments.split_inv_rec.html" title="split_inv_rec"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="analysis">
+<h1>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="phase-cycling">
+<h2>Phase Cycling<a class="headerlink" href="#phase-cycling" title="Permalink to this headline">¶</a></h2>
+<p>Note that it makes the most sense to phase cycle the pulses in the correct order.  The <a href="#id1"><span class="problematic" id="id2">:function:`simple_sequence &lt;Experiments.Experiment.simple_sequence&gt;`</span></a> method should be used to eaily construct pulse sequences with standard phase cycling.</p>
+<p>Previously, the following module was used to control phase cycling.
+However, it is now <strong>obsolete</strong>.</p>
+<span class="target" id="module-PhaseCycling"></span><div class="section" id="phasecycling">
+<h3><a class="reference internal" href="#module-PhaseCycling" title="PhaseCycling"><code class="xref py py-mod docutils literal"><span class="pre">PhaseCycling</span></code></a><a class="headerlink" href="#phasecycling" title="Permalink to this headline">¶</a></h3>
+<p>The PhaseCycling module provides generation of phase cycles
+(CYCLOPS) and automatic extraction of signal components from
+experimental data, based on the phasecycle and desired
+coherence path.</p>
+<p>Typically, use a full phasecycle in the experiment (FullPhaseCycle())
+and use SignalWeights() to disentangle signal components arising from
+different coherence pathways.
+While detectable coherence paths always end with p=-1, use an all-zeroes
+path to discriminate against coherent noise (unaffected by phase of the
+pulses).</p>
+<p>(Copyright) 2003 Wulf Hofbauer</p>
+<dl class="function">
+<dt id="PhaseCycling.COSYPhaseCycle">
+<code class="descclassname">PhaseCycling.</code><code class="descname">COSYPhaseCycle</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.COSYPhaseCycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a phase cycle for 2 pulses and four phases.
+It should be a simplified form of the more general table above.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.DEER4PhaseCycle">
+<code class="descclassname">PhaseCycling.</code><code class="descname">DEER4PhaseCycle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.DEER4PhaseCycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Phase table for 4p-DEER experiment 90-t1-180-t2-pump-t3-180-t4
+<span class="math">\(t4 = t2 + t3 6\)</span>.</p>
+<p>Petr P. Borbat, Cornell University, 2000</p>
+<p>Length of phase cycle : 32</p>
+<p>Pulse phases : 90 degree increment</p>
+<p>Receiver phase : 180 degree increment</p>
+<p>phy1 phy2 phy3 phy4 receiver phase</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.ExtractSignals">
+<code class="descclassname">PhaseCycling.</code><code class="descname">ExtractSignals</code><span class="sig-paren">(</span><em>paths</em>, <em>phases</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.ExtractSignals" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a data array for each step in the phasecycle, returns an
+array of signals for each desired coherence path</p>
+<p>A desired signal component can be extracted from phasecycled data using the
+following function:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: x=PhaseCycling.ExtractSignals([(1,0,-1), (-1,0,-1)], pc, data)
+95 GHz:
+</pre></div>
+</div>
+<p>The first parameter is a list of the desired coherence pathways
+(in this case <span class="math">\(p=+1\rightarrow 0\rightarrow-1\)</span> and
+<span class="math">\(p=-1 \rightarrow 0 \rightarrow -1\)</span>for
+the<span class="math">\(S_{c-}\)</span>and<span class="math">\(S_{c+}\)</span>components of an
+2D-ELDOR/EXCSY experiment).
+It is assumed that the experiment starts from a
+<span class="math">\(p=0\)</span> state (no coherences). The
+second argument is the phasecycle (in the same format as generated by the
+<cite>FullPhaseCycle</cite> function).  The last argument is the acquired data,
+organized as a complex-valued array whose first index corresponds to
+the step in the phasecycle.</p>
+<p>The function returns a complex-valued array with the first index denoting the
+desired coherence pathway. In the example given above, <span class="math">\(x[0]\)</span> would
+correspond to the <span class="math">\(S_{c-}\)</span> signal and <span class="math">\(x[1]\)</span> to the
+<span class="math">\(S_{c+}\)</span> signal.</p>
+<p>Note that the signal components are calculated in a least-squares sense.
+That is, a best estimate will be delivered in cases where the equation
+system derived from the given phasecycle and the requested coherence pathways
+is under-determined.</p>
+<p>Observable coherence pathways will always end with <span class="math">\(p=-1\)</span>. However, extracting
+other, virtual, pathways can be advantageous for diagnostics. As an
+example, a path of <span class="math">\(p=0 \rightarrow 0 \rightarrow \ldots \rightarrow 0\)</span> will
+yield the coherent noise background that does not depend on the phase of the
+pulses.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.FullPhaseCycle">
+<code class="descclassname">PhaseCycling.</code><code class="descname">FullPhaseCycle</code><span class="sig-paren">(</span><em>nr_of_pulses</em>, <em>nr_of_phases=4</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.FullPhaseCycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>This generates a fully-cycled set of phase combinations.
+It returns a list of phase tuples (in degrees) for full phasecycling
+(nr_of_phases raised to nr_of_pulses steps)</p>
+<p>For instance, at the hfser prompt:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: PhaseCycling.FullPhaseCycle(4,2)
+[(0, 0, 0, 0), (180, 0, 0, 0), (0, 180, 0, 0), (180, 180, 0, 0),
+(0, 0, 180, 0), (180, 0, 180, 0), (0, 180, 180, 0), (180, 180, 180, 0),
+(0, 0, 0, 180), (180, 0, 0, 180), (0, 180, 0, 180), (180, 180, 0, 180),
+(0, 0, 180, 180), (180, 0, 180, 180), (0, 180, 180, 180),
+(180, 180, 180, 180)]
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nr_of_pulses</strong> &#8211; Specifies the number of pulses.</li>
+<li><strong>nr_of_phases</strong> &#8211; Specifies the number of phases. Default is 4.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The length of the phasecycle is<span class="math">\(m^n\)</span>. Keep in mind that the length
+of the phase cycle grows exponentially with the number of pulses.
+For very long pulse sequences, hand-crafted sparse phase
+cycles will be necessary.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.SignalPhase">
+<code class="descclassname">PhaseCycling.</code><code class="descname">SignalPhase</code><span class="sig-paren">(</span><em>phases</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.SignalPhase" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the accumulated signal phase (in degrees)
+for pulses of given phase and a specified coherence path</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.SignalPhaseFactor">
+<code class="descclassname">PhaseCycling.</code><code class="descname">SignalPhaseFactor</code><span class="sig-paren">(</span><em>phases</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.SignalPhaseFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the accumulated phase (complex phasing factor)
+for pulses of given phase and a specified coherence path</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.SignalPhaseFactorMatrix">
+<code class="descclassname">PhaseCycling.</code><code class="descname">SignalPhaseFactorMatrix</code><span class="sig-paren">(</span><em>phases</em>, <em>paths</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.SignalPhaseFactorMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a matrix of phase factors for a list of phases
+and coherence pathways</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.SignalWeights">
+<code class="descclassname">PhaseCycling.</code><code class="descname">SignalWeights</code><span class="sig-paren">(</span><em>paths</em>, <em>phases</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.SignalWeights" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a matrix <span class="math">\(M\)</span> so that <span class="math">\(x=M*y\)</span>, where <span class="math">\(y\)</span>
+is a vector of phasecycled data sets (according to phases)
+and <span class="math">\(x\)</span> is a vector
+of data sets associated with the specified coherence pathways</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PhaseCycling.SimilarToCOSY">
+<code class="descclassname">PhaseCycling.</code><code class="descname">SimilarToCOSY</code><span class="sig-paren">(</span><em>t1</em>, <em>phi1</em>, <em>phi2</em><span class="sig-paren">)</span><a class="headerlink" href="#PhaseCycling.SimilarToCOSY" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function constructs an expected magnetization for a theoretical
+approximation to the COSY experiment. It fakes the relaxation with
+a period T2.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h2>
+<p>Creating fancy plots of experimental data is highly specific to the intended
+purpose and therefore left to the user. A powerful plotting package is
+<a class="reference external" href="http://www.gnuplot.info">Gnuplot</a>, which can be used from within Python by
+importing the <cite>Gnuplot</cite> module. This allows automated generation of
+highly customized data plots without the interruption in workflow caused by
+having to switch to another program. For further details, the user is advised
+to consult the <cite>Gnuplot</cite> documentation.
+For quick and dirty plots, e.g. to judge the outcome of an experiment, some
+basic plotting functions, based on the <cite>Gnuplot</cite> module, are provided
+in the <code class="xref py py-mod docutils literal"><span class="pre">plot</span></code> module.</p>
+<p>Each experiment has its own plotting routines. First, you have to plot to
+the screen. Then you can save the plot:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: echo.run()
+95 GHz: plots=echo.plot()     # This returns an array of plots.
+95 GHz: plots[0].print_one() # Print the first one.
+</pre></div>
+</div>
+<p>If there are parameters for a particular plotting routine, you can
+specify them in <cite>plot()</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: plots=cw.plot(offset=1,phase=90,quadrature=False)
+</pre></div>
+</div>
+<p>To save a plot, specify a filename argument to print_plot:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: plots[0].print_one(&#39;plot51.ps&#39;)
+</pre></div>
+</div>
+<p>The plotting routine for each experiment is in the <cite>plot</cite> module.
+You could call that routine directly. It returns a Gnuplot object
+which has a <cite>hardcopy</cite> method:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g=plot.plotfid(fid)
+95 GHz: g.hardcopy(&quot;plot.ps&quot;, color=1, solid=1)
+95 GHz: g.hardcopy(&quot;|lpr -Pprinter&quot;, color=1, solid=1)
+95 GHz:
+</pre></div>
+</div>
+<p>where <cite>g</cite> is a reference to a <cite>Gnuplot</cite> object created by one
+of the functions described below.</p>
+<p>Another way to save images is the makeps function.</p>
+<dl class="function">
+<dt id="plot.makeps">
+<code class="descclassname">plot.</code><code class="descname">makeps</code><span class="sig-paren">(</span><em>filename</em>, <em>g</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.makeps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plotting functions which use Gnuplot return a Gnuplot object.
+This function uses that object to save a Postscript copy of
+the plot:</p>
+<div class="highlight-python"><div class="highlight"><pre>&gt; g=plot.plotfid(fid)
+&gt; plot.makeps(&#39;latest&#39;,g)
+</pre></div>
+</div>
+<p>The resulting file will be called
+YYYY-MM-dd_hhmm-latest.ps, and you can print it with lpr.
+You can also just make a hardcopy without this function:</p>
+<div class="highlight-python"><div class="highlight"><pre>&gt; g=plot.plotfid(fid)
+&gt; g.hardcopy(&#39;latest&#39;)
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="oscilloscope">
+<h3>Oscilloscope<a class="headerlink" href="#oscilloscope" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plot.save_oscope">
+<code class="descclassname">plot.</code><code class="descname">save_oscope</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.save_oscope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve an image from the Agilent DSO6054a oscilloscope.
+This oscilloscope has a web interface which shows the current
+screen:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz&gt; png_file=plot.save_oscope()
+95 GHz&gt; print png_file
+image123423.png
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> &#8211; This optional parameter specifies the name
+of the output file. If unset, this uses the
+same randomly-generated name the oscilloscope
+uses.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the filename of the png file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="d-data-arrays">
+<h3>1D Data Arrays<a class="headerlink" href="#d-data-arrays" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plot.cplot">
+<code class="descclassname">plot.</code><code class="descname">cplot</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.cplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the elements of a (real or complex-valued)
+1D array vs. the element index. This is mainly useful for diagnostics. A
+reference to the created <cite>Gnuplot</cite> object is returned, making it
+possible to manipulate/customize the plot:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g=plot.cplot(x)
+95 GHz:
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="field-swept-cw-esr-spectrum">
+<h3>Field-Swept CW ESR Spectrum<a class="headerlink" href="#field-swept-cw-esr-spectrum" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt>
+<code class="descname">plot.plotcwdata(cw, offset=None, phase=0, quadrature=1):</code></dt>
+<dd><p>&#8216;&#8217;&#8217;
+This function creates plots of
+field-swept cw ESR experiments (as defined by the <a class="reference internal" href="generated/Experiments.html#module-Experiments" title="Experiments"><code class="xref py py-mod docutils literal"><span class="pre">Experiments</span></code></a>
+module):</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g=plot.plotcwdata(cw)
+95 GHz: h=plot.plotcwdata(cw, offset=0, phase=45)
+95 GHz:
+</pre></div>
+</div>
+<p>The plot displays both components (real and imaginary part)
+of the spectrum (averaged over all sweeps).  An optional (complex) offset value
+may be subtracted from the spectrum data; by default, the arithmetic mean of
+the spectral data will be subtracted.  Additionally, a phase correction
+<span class="math">\(\phi\)</span>
+(in degrees) may be specified (this will multiply the data by a factor
+of<span class="math">\(\exp\left(i \pi \phi/180^\circ\right)\)</span>before
+plotting). A textual
+description of the various parameters is generated over the plot
+proper.footnote{When the plot is saved in encapsulated postscript format, this
+description will be outside of the bounding box, and may thus not be visible.
+When printed as a plain postscript file, the description will be visible.}</p>
+<div class="figure" id="id3">
+<img alt="manual/pics/plotcwdata.*" src="manual/pics/plotcwdata.*" />
+<p class="caption"><span class="caption-text">Output generated by the computer{plotcwdata} function.</span></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="fid-spectrum">
+<h3>FID Spectrum<a class="headerlink" href="#fid-spectrum" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plot.plotfid">
+<code class="descclassname">plot.</code><code class="descname">plotfid</code><span class="sig-paren">(</span><em>exp</em>, <em>deglitch=None</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.plotfid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot an absolute value frequency domain plot of an FID experiment:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g=plot.plotfid(fid)
+95 GHz: h=plot.plotfid(fid, deglitch=True)
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deglitch</strong> &#8211; Providing a non-zero value for the optional deglitch
+parameter interpolates the <span class="math">\(f=0\)</span>
+component from its next neighbours.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns a single Gnuplot instance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="secsy-spectrum">
+<h3>SECSY Spectrum<a class="headerlink" href="#secsy-spectrum" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plot.plotsecsy">
+<code class="descclassname">plot.</code><code class="descname">plotsecsy</code><span class="sig-paren">(</span><em>exp</em>, <em>oversampling=1</em>, <em>deglitch=False</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.plotsecsy" title="Permalink to this definition">¶</a></dt>
+<dd><p>An absolute value frequency domain plot of the
+<span class="math">\(S_{c+}\)</span> and <span class="math">\(S_{c-}\)</span> signals of
+a SECSY experiment can be generated using the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g1,h1=plot.plotsecsy(secsy)
+95 GHz: g2,h2=plot.plotsecsy(secsy, deglitch=True)
+</pre></div>
+</div>
+<p>The function returns a tuple of references to the
+<span class="math">\(S_{c+}\)</span> and <span class="math">\(S_{c-}\)</span> plots.
+Providing a non-zero value for the optional deglitch parameter
+replaces the <span class="math">\(f_1=0\)</span> and <span class="math">\(f_2=0\)</span> slices of the 2D
+data set with interpolated values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>exp</strong> &#8211; The experiment to plot.</li>
+<li><strong>oversampling</strong> &#8211; Default 1.</li>
+<li><strong>deglitch</strong> &#8211; Defaul False.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two Gnuplot instances in a tuple.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="cosy-spectrum">
+<h3>COSY Spectrum<a class="headerlink" href="#cosy-spectrum" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plot.plotcosy">
+<code class="descclassname">plot.</code><code class="descname">plotcosy</code><span class="sig-paren">(</span><em>exp</em>, <em>oversampling=1</em>, <em>deglitch=False</em>, <em>extra_title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.plotcosy" title="Permalink to this definition">¶</a></dt>
+<dd><p>An absolute value frequency domain plot of the
+<span class="math">\(S_{c+}\)</span> and <span class="math">\(S_{c-}\)</span> signals of
+a COSY experiment can be generated using the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g1,h1=plot.plotcosy(cosy)
+95 GHz: g2,h2=plot.plotcosy(cosy, deglitch=True)
+</pre></div>
+</div>
+<p>The function returns a tuple of references to the
+<span class="math">\(S_{c+}\)</span> and <span class="math">\(S_{c-}\)</span> plots.
+Providing a non-zero value for the optional deglitch parameter
+replaces the <span class="math">\(f_1=0\)</span> and <span class="math">\(f_2=0\)</span> slices of the 2D
+data set with interpolated values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>exp</strong> &#8211; The experiment to plot.</li>
+<li><strong>oversampling</strong> &#8211; Default 1.</li>
+<li><strong>deglitch</strong> &#8211; Default False.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two Gnuplot instances in a tuple.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="d-eldor-excsy-spectrum">
+<h3>2D-ELDOR/EXCSY Spectrum<a class="headerlink" href="#d-eldor-excsy-spectrum" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="plot.ploteldor">
+<code class="descclassname">plot.</code><code class="descname">ploteldor</code><span class="sig-paren">(</span><em>exp</em>, <em>oversampling=1</em>, <em>deglitch=False</em><span class="sig-paren">)</span><a class="headerlink" href="#plot.ploteldor" title="Permalink to this definition">¶</a></dt>
+<dd><p>An absolute value frequency domain plot of the
+<span class="math">\(S_{c+}\)</span> and <span class="math">\(S_{c-}\)</span> signals of
+a 2D-ELDOR/EXCSY experiment can be generated using the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: g1,h1=plot.ploteldor(eldor)
+95 GHz: g2,h2=plot.ploteldor(eldor, deglitch=1)
+</pre></div>
+</div>
+<p>The function returns a tuple of references to the
+<span class="math">\(S_{c+}\)</span> and <span class="math">\(S_{c-}\)</span> plots.
+Providing a non-zero value for the optional deglitch parameter
+replaces the <span class="math">\(f_1=0\)</span> and <span class="math">\(f_2=0\)</span> slices of the 2D
+data set with interpolated values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>exp</strong> &#8211; The experiment to plot.</li>
+<li><strong>oversampling</strong> &#8211; Default 1.</li>
+<li><strong>deglitch</strong> &#8211; Default False.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two Gnuplot instances.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="continuous-wave-spectra">
+<h3>Continuous Wave Spectra<a class="headerlink" href="#continuous-wave-spectra" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="io_doc.cw2asc">
+<code class="descclassname">io_doc.</code><code class="descname">cw2asc</code><span class="sig-paren">(</span><em>exp</em>, <em>eol='\r\n'</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.cw2asc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert data to strings for Continuous Wave so that it can
+be saved:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: text=io.cw2asc(cw)
+95 GHz: text2=io.cw2asc(cw, eol=&quot;\r&quot;)
+</pre></div>
+</div>
+<p>The data is stored as multiple lines of 3 columns where
+each column refers to the magnetic field, the real part
+of the acquired data point, and the imaginary part of the acquired
+data point, respectively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>eol</strong> &#8211; This is an arbitrary character sequence to delimit text
+lines. By default, lines are separated according to DOS/Windows
+conventions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="d-eldor-excsy-spectra">
+<h3>2D-ELDOR/EXCSY Spectra<a class="headerlink" href="#d-eldor-excsy-spectra" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="io_doc.eldor2spc">
+<code class="descclassname">io_doc.</code><code class="descname">eldor2spc</code><span class="sig-paren">(</span><em>exp</em>, <em>fmin=-1e+99</em>, <em>fmax=1e+99</em>, <em>eol='\r\n'</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.eldor2spc" title="Permalink to this definition">¶</a></dt>
+<dd><p>return .spc data file for Sc+ and Sc- ELDOR signals in strings,
+optionally crop to frequency range of interest</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function creates a textual data representation
+believed to be compatible with existing ACERT simulation
+programs. Due to the lack of a specification for this format,
+the function is based on partial reverse engineering of sample
+code. While it seems to have worked so far, it is possible
+that it may break in the future.</p>
+</div>
+<p>An example of using this function:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: text=io.eldor2spc(eldor, fmin=-10e6, fmax=10e6, eol=&quot;\r&quot;);
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fmin</strong> &#8211; min of cropping range for frequency domain data.</li>
+<li><strong>fmax</strong> &#8211; max of cropping range for frequency domain data.</li>
+<li><strong>eol</strong> &#8211; optional, specified end-of-line mark. By default,
+DOW/Windows convention is used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="exporting-data">
+<h2>Exporting Data<a class="headerlink" href="#exporting-data" title="Permalink to this headline">¶</a></h2>
+<p>Results of experiments are all stored in the same directory,
+specified by Spectrometer.results. Each filename has the format
+YYYY-MM-DD_experiment_username_label.dat. A text formatted version
+of some experiments is stored with the same name but an ending of .txt.
+The text files are tab-delimited, 3-column.</p>
+<p>At the end of each experiment run, the prompt will ask whether to
+save the data:</p>
+<div class="highlight-python"><div class="highlight"><pre>Would you like to save your data? (y/n)y
+What label would you like in the filename (no space, enter for none) ? tmp
+Your raw data was saved as /results/fid/2010-03-12_1437_FID_acert_tmp.dat
+Would you like to erase the results from memory (this will save memory)? (Y/N)n
+</pre></div>
+</div>
+<p>The software stores all data objects in files according to the established
+Python :mod:pickle: and <code class="xref py py-mod docutils literal"><span class="pre">Numeric.pickle</span></code> standards[#f1]_.
+This makes it straightforward to access
+and manipulate data files from other Python programs.</p>
+<p>To export data in ASCII (text) format, short python scripts can be written.
+Predefined ad-hoc functions are provided for the case of continuous wave
+spectra and 2D-ELDOR/EXCSY spectra. For other experiments, such routines are
+left as an exercise to the reader, as there appears to be a lack of a suitable
+standard file format specification to adhere to.</p>
+<div class="section" id="writing-data-to-a-file">
+<h3>Writing Data to a File<a class="headerlink" href="#writing-data-to-a-file" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="io_doc.save">
+<code class="descclassname">io_doc.</code><code class="descname">save</code><span class="sig-paren">(</span><em>experiment</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save an experiment in either pickle or hdf5 format, depending
+on whether hdf5 is available.
+If the file exists, it will be overwritten. If not, it will
+be created.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj</strong> &#8211; The object to save.</li>
+<li><strong>path</strong> &#8211; Path and filename of the file in which to save it.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="io_doc.saveexp">
+<code class="descclassname">io_doc.</code><code class="descname">saveexp</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.saveexp" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function saves CW data to a file. It runs interactively:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: io.saveexp(cw)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="io_doc.save_experiment">
+<code class="descclassname">io_doc.</code><code class="descname">save_experiment</code><span class="sig-paren">(</span><em>obj</em>, <em>classifier=None</em>, <em>base_filename=None</em>, <em>askmem=True</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.save_experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function saves data for most experiments, aside from CW,
+to a file. It runs interactively:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: fid.run()
+95 GHz: io.save_experiment(fid)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="io_doc.save_simple">
+<code class="descclassname">io_doc.</code><code class="descname">save_simple</code><span class="sig-paren">(</span><em>exp</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.save_simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save an experiment to text files. There are three files. The
+first has the same name as the given path, for example file.txt.
+It contains key-value pairs describing parameters and spectrometer
+state. For the B1 experiment looks like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">L_inc</span><span class="o">=</span><span class="mf">1e-09</span>
+<span class="n">L_min</span><span class="o">=</span><span class="mf">3e-09</span>
+<span class="n">L_steps</span><span class="o">=</span><span class="mi">20</span>
+<span class="n">averager_sensitivity</span><span class="o">=</span><span class="mf">0.1</span>
+<span class="n">averages</span><span class="o">=</span><span class="mi">32</span>
+<span class="n">field</span><span class="o">=</span><span class="mf">3.39125</span>
+<span class="n">main_current</span><span class="o">=</span><span class="mf">29.2</span>
+<span class="n">main_field</span><span class="o">=</span><span class="mf">3.40005</span>
+<span class="n">microwave_attenuation</span><span class="o">=</span><span class="bp">None</span>
+<span class="n">microwave_frequency</span><span class="o">=</span><span class="mf">9.50038e+10</span>
+<span class="n">rep_rate</span><span class="o">=</span><span class="mi">5000</span>
+<span class="n">sweep_current</span><span class="o">=-</span><span class="mf">1.76</span>
+<span class="n">t1</span><span class="o">=</span><span class="mf">6e-08</span>
+<span class="n">t2_inc</span><span class="o">=</span><span class="mf">1e-09</span>
+<span class="n">t2_steps</span><span class="o">=</span><span class="mi">1024</span>
+<span class="n">temperature</span><span class="o">=</span><span class="mf">258.69</span>
+<span class="n">data_type</span><span class="o">=</span><span class="n">complex128</span>
+<span class="n">data_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The data shape tells you how many dimensions there are in the
+main data array.</p>
+<p>The next two files have &#8220;real&#8221; and &#8220;imag&#8221; in the name, inserted
+before the file type, so it would be file.real.txt and file.imag.txt
+in this example. Each one contains a line for each row of the data.
+For the shape shown above, (20,1024), each file has 20 lines of 1024
+floating point numbers, each separated by a space.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="io_doc.save_matlab">
+<code class="descclassname">io_doc.</code><code class="descname">save_matlab</code><span class="sig-paren">(</span><em>experiment</em>, <em>path='matlab.dat'</em><span class="sig-paren">)</span><a class="headerlink" href="#io_doc.save_matlab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save an experiment for Matlab. Do phase cycling first if there is
+more than one phasecycle.
+This creates a separate pair of files for each pathway that is extracted
+from phase cycles. The pair has one real and one imaginary array.
+It also saves a file, with the exact name of the given path, that
+contains key-value pairs describing the experiment.</p>
+<p>For 2D, the coherence pathways are [(-1,-1), (1,-1), (0,-1), (0,0)].
+For 3D, the coherence pathways are
+[(-1,0,-1), (1,0,-1), (0,0,-1), (0,0,0)].</p>
+<p>The Matlab load command should be able to load one real or imaginary
+part from one pathway. If the data is 3D or higher-dimensional, all of
+the dimensions are stacked into one file. For instance, a (2,3,4) array
+will be saved as a (6,4) array, because that&#8217;s what Matlab&#8217;s load command
+understands. You can use reshape() within Matlab to change it to a
+3D array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>experiment</strong> &#8211; The variable that defines the experiment, such as echo.</li>
+<li><strong>path</strong> &#8211; The filename to use when writing results.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>For details, refer to the Python and Numeric Python
+documentation available at <a class="reference external" href="http://www.python.org">Python.org</a>.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Analysis</a><ul>
+<li><a class="reference internal" href="#phase-cycling">Phase Cycling</a><ul>
+<li><a class="reference internal" href="#phasecycling"><code class="docutils literal"><span class="pre">PhaseCycling</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plotting">Plotting</a><ul>
+<li><a class="reference internal" href="#oscilloscope">Oscilloscope</a></li>
+<li><a class="reference internal" href="#d-data-arrays">1D Data Arrays</a></li>
+<li><a class="reference internal" href="#field-swept-cw-esr-spectrum">Field-Swept CW ESR Spectrum</a></li>
+<li><a class="reference internal" href="#fid-spectrum">FID Spectrum</a></li>
+<li><a class="reference internal" href="#secsy-spectrum">SECSY Spectrum</a></li>
+<li><a class="reference internal" href="#cosy-spectrum">COSY Spectrum</a></li>
+<li><a class="reference internal" href="#d-eldor-excsy-spectrum">2D-ELDOR/EXCSY Spectrum</a></li>
+<li><a class="reference internal" href="#continuous-wave-spectra">Continuous Wave Spectra</a></li>
+<li><a class="reference internal" href="#d-eldor-excsy-spectra">2D-ELDOR/EXCSY Spectra</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exporting-data">Exporting Data</a><ul>
+<li><a class="reference internal" href="#writing-data-to-a-file">Writing Data to a File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="generated/Experiments.split_inv_rec.html"
+                        title="previous chapter">split_inv_rec</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pulseframe.html"
+                        title="next chapter">Define a Pulse Frame</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/analysis.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pulseframe.html" title="Define a Pulse Frame"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="generated/Experiments.split_inv_rec.html" title="split_inv_rec"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, John Franck, Drew Dolgert, Curt Dunnam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>

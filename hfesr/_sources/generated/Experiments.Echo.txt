@@ -1,0 +1,37 @@
+Echo
+================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: Echo
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Echo.__init__
+      ~Echo.acquire_data
+      ~Echo.bin_switch_blank
+      ~Echo.bin_switch_fieldsweep
+      ~Echo.build_sequences
+      ~Echo.gen_pulse
+      ~Echo.get_spectrometer
+      ~Echo.plot
+      ~Echo.plot_experiment
+      ~Echo.post_process_data
+      ~Echo.process_overrides
+      ~Echo.pull
+      ~Echo.push
+      ~Echo.run
+      ~Echo.set_field
+      ~Echo.simple_sequence
+   
+   
+
+   
+   
+   

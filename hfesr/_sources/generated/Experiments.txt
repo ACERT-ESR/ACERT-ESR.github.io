@@ -1,0 +1,71 @@
+Experiments
+===========
+
+.. automodule:: Experiments
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      OnePulsedAcquisition
+      PulsedAcquisition
+      clearkey
+      handle_break
+      keypress
+      plot_data
+      test_experiments
+      test_experiments_pulseblaster
+      test_experiments_tune
+      test_set_base
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      B1_FID
+      B1_echo
+      B1_se
+      COSY
+      COSYAverages
+      CW
+      Constants
+      DEER3
+      DEER4
+      DQC
+      DQC128
+      DQC256
+      DQC64
+      DQCBase
+      ELDOR
+      ELDOR_3D
+      Echo
+      Experiment
+      FID
+      FIDAverages
+      Loopback
+      PulseExperimentBase
+      PulseTune
+      SECSY
+      T1_inv
+      Tune
+      Tune2
+      Tune3
+      TuneCWConstant
+      TuneCWCycled
+      TuneCycled
+      TuneEcho
+      TuneEchoCycled
+      echo_T2
+      split_inv_rec
+   
+   
+
+   
+   
+   

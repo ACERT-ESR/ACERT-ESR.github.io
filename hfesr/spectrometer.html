@@ -1,0 +1,516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Spectrometer &mdash; 95 GHz ESR Software 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="95 GHz ESR Software 0.9 documentation" href="index.html" />
+    <link rel="next" title="Experiments" href="experiments.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="experiments.html" title="Experiments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="spectrometer">
+<h1>Spectrometer<a class="headerlink" href="#spectrometer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="devices-managed-by-the-spectrometer">
+<h2>Devices Managed by the Spectrometer<a class="headerlink" href="#devices-managed-by-the-spectrometer" title="Permalink to this headline">¶</a></h2>
+<p>In addition, there are the Chase DWG11000 signal generator and
+SpinCore PulseBlaster signal generator.</p>
+</div>
+<div class="section" id="transceiver-control">
+<h2>Transceiver Control<a class="headerlink" href="#transceiver-control" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="transmitter-power">
+<h3>Transmitter Power<a class="headerlink" href="#transmitter-power" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.set_microwave_attenuation">
+<code class="descclassname">Spectrometer.</code><code class="descname">set_microwave_attenuation</code><span class="sig-paren">(</span><em>dB</em><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.set_microwave_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The low-level transmitter power can be controlled by a
+current-controled pin
+attenuator. At present, the controlling current is set manually.
+In the future, it may be set and read back by software.
+This stub function is provided.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descclassname">Spectrometer.</code><code class="descname">set_microwave_attenuation</code><span class="sig-paren">(</span><em>dB</em><span class="sig-paren">)</span></dt>
+<dd><p>The low-level transmitter power can be controlled by a
+current-controled pin
+attenuator. At present, the controlling current is set manually.
+In the future, it may be set and read back by software.
+This stub function is provided.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="operating-frequency">
+<h3>Operating Frequency<a class="headerlink" href="#operating-frequency" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.get_microwave_frequency">
+<code class="descclassname">Spectrometer.</code><code class="descname">get_microwave_frequency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.get_microwave_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operating frequency [Hz] of the transceiver can be
+read with this function.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.get_microwave_frequency()
+95002895000.0
+95 GHz:
+</pre></div>
+</div>
+<p>Note that this function may be very slow.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="magnet-control">
+<h2>Magnet Control<a class="headerlink" href="#magnet-control" title="Permalink to this headline">¶</a></h2>
+<p>The magnetic field control functions assume that the necessary magnet coils are
+connected to their respective power supplies. It is important that these
+connections are performed properly: for the main coil, the persistent current
+must match the current delivered by the power supply before the heater switch
+is opened; similarly, the sweep coil current set by software must correspond to
+the manually set sweep current on the sweep coil supply before the supply is
+switched from manual to externally controlled operation.</p>
+<p>Magnet control functions operate on currents (measured in amperes). The
+currents are related to the magnetic field by calibration constants. This
+choice was made so that an update of the calibration constants does not result
+in calculating an incorrect current from a given field (like a certain
+commercial W-band ESR spectrometer), which could lead to a quench of the
+magnet.</p>
+<div class="section" id="main-coil-control">
+<h3>Main Coil Control<a class="headerlink" href="#main-coil-control" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.set_main_current">
+<code class="descclassname">Spectrometer.</code><code class="descname">set_main_current</code><span class="sig-paren">(</span><em>I</em><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.set_main_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Presently, setting the magnetic field of the main coil under program control is
+not supported.  It is recommended, however, to declare the persistent main coil
+current (in amperes), as it will help in determining required sweep coil
+currents in field-swept experiments.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_main_current(29.2)
+Setting the main coil current is not implemented yet.
+29.199999999999999
+95 GHz: s.get_main_current()
+29.199999999999999
+95 GHz:
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.get_main_current">
+<code class="descclassname">Spectrometer.</code><code class="descname">get_main_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.get_main_current" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="sweep-coil-control">
+<h3>Sweep Coil Control<a class="headerlink" href="#sweep-coil-control" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.set_sweep_current">
+<code class="descclassname">Spectrometer.</code><code class="descname">set_sweep_current</code><span class="sig-paren">(</span><em>I</em><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.set_sweep_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sweep coil current (in amperes) can be set and retrieved under software
+control. A ramp algorithm is implemented in the software that limits the rate
+of current change through the coils to safe levels.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_sweep_current(0)
+0.0
+95 GHz: s.get_sweep_current()
+0.0
+95 GHz:
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.get_sweep_current">
+<code class="descclassname">Spectrometer.</code><code class="descname">get_sweep_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.get_sweep_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>read back sweep current setting and update state</p>
+</dd></dl>
+
+</div>
+<div class="section" id="calibration-constants-and-conversion-functions">
+<h3>Calibration Constants and Conversion Functions<a class="headerlink" href="#calibration-constants-and-conversion-functions" title="Permalink to this headline">¶</a></h3>
+<p>The Spectrometer maintains constants that can be used to
+convert between currents and nominal magnetic fields.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.main_tesla_per_ampere
+0.11644
+95 GHz: s.sweep_tesla_per_ampere
+0.0050000000000001
+95 GHz:
+</pre></div>
+</div>
+<p>Other constants describe allowed current ranges (in Amperes) and
+parameters for implicit current ramp generation.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.max_sweep_current
+10.0
+95 GHz: s.min_sweep_current
+-10.0
+95 GHz: s.max_sweep_current_step
+0.050000000000000003
+95 GHz: s.sweep_current_settling_time
+0.050000000000000003
+</pre></div>
+</div>
+<p>For convenience, functions are provided to calculate nominal currents
+(in Amperes) to achieve a desired magnetic field (in Teslas). Note
+that the calculated sweep coil depends on the set main coil
+current.</p>
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.calculate_main_current">
+<code class="descclassname">Spectrometer.Spectrometer.</code><code class="descname">calculate_main_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.calculate_main_current" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Spectrometer.Spectrometer.calculate_sweep_current">
+<code class="descclassname">Spectrometer.Spectrometer.</code><code class="descname">calculate_sweep_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Spectrometer.Spectrometer.calculate_sweep_current" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="lock-in-detection">
+<h2>Lock-In Detection<a class="headerlink" href="#lock-in-detection" title="Permalink to this headline">¶</a></h2>
+<p>The lock-in functions are typically used for field-modulated cw ESR
+experiments.</p>
+<div class="section" id="field-modulation-and-lock-in-parameters">
+<h3>Field Modulation and Lock-In Parameters<a class="headerlink" href="#field-modulation-and-lock-in-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Various operating parameters of the lock-in amplifiers can be set or read out
+under software control. The two single-channel lock-in amplifiers currently
+used are bonded together to one virtual instrument. Setting a parameter will
+affect both lock-ins; reading a parameter will generate an error if there is a
+discrepancy between the lock-in settings.</p>
+<p>In practical operation, it is often convenient to set parameters via the
+lock-in front panel controls and merely read them out in software to document
+the experiment. Note that some of the front panel settings (like e.g.dynamic
+reserve) are not readily accessible by software (but they are supported by
+<code class="docutils literal"><span class="pre">sync_lockin_settings</span></code>, see below).</p>
+</div>
+<div class="section" id="modulation-frequency">
+<h3>Modulation Frequency<a class="headerlink" href="#modulation-frequency" title="Permalink to this headline">¶</a></h3>
+<p>The modulation frequency [Hz], which also is the reference for the lock-in
+amplifiers, can be accessed as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_modulation_frequency(100000)
+100000.0
+95 GHz: s.get_modulation_frequency()
+100000.0
+</pre></div>
+</div>
+<p>Note that the <code class="docutils literal"><span class="pre">set_modulation_frequency</span></code> function returns the
+achieved modulation frequency. This achieved frequency may be slightly
+different from the frequency requested due to limitations of the VCO and
+frequency readout hardware. Regulating the modulation frequency may take
+several seconds.</p>
+</div>
+<div class="section" id="modulation-amplitude">
+<h3>Modulation Amplitude<a class="headerlink" href="#modulation-amplitude" title="Permalink to this headline">¶</a></h3>
+<p>In the current hardware implementation, the modulation amplitude (in teslas)
+cannot be set or read back by software. To accomodate such future
+functionality, stub functions are provided. Presently, they return
+<code class="docutils literal"><span class="pre">None</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_modulation_amplitude(2e-4)
+95 GHz: s.get_modulation_amplitude()
+</pre></div>
+</div>
+</div>
+<div class="section" id="time-constant">
+<h3>Time Constant<a class="headerlink" href="#time-constant" title="Permalink to this headline">¶</a></h3>
+<p>Time constants are specified in seconds. Note that the lock-in hardware may
+allow only certain discrete values. The time constant is rounded towards
+smaller values, if necessary.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_lockin_time_constant(7e-3)
+0.0030000000000000001
+95 GHz: s.get_lockin_time_constant()
+0.0030000000000000001
+</pre></div>
+</div>
+</div>
+<div class="section" id="sensitivity">
+<h3>Sensitivity<a class="headerlink" href="#sensitivity" title="Permalink to this headline">¶</a></h3>
+<p>The full-scale lock-in sensitivity is specified in volts. Only certain
+sensitivities are supported by the hardware. To avoid clipping, the sensitivity
+is rounded towards larger values, if necessary.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_lockin_sensitivity(0.15)
+0.20000000000000001
+95 GHz: s.get_lockin_sensitivity()
+0.20000000000000001
+</pre></div>
+</div>
+</div>
+<div class="section" id="phase">
+<h3>Phase<a class="headerlink" href="#phase" title="Permalink to this headline">¶</a></h3>
+<p>The detection phase of the lock-in amplifiers is specified in degrees.</p>
+<blockquote>
+<div>95 GHz: s.set_lockin_phase(22.5)
+22.5
+95 GHz: s.get_lockin_phase()
+22.5</div></blockquote>
+</div>
+<div class="section" id="synchronizing-lock-in-settings">
+<h3>Synchronizing Lock-In Settings<a class="headerlink" href="#synchronizing-lock-in-settings" title="Permalink to this headline">¶</a></h3>
+<p>The settings of the lock-in amplifiers can be synchronized to enforce
+consistence.  This is of particular use if parameters are changed from the
+lock-in front panel.  The settings of the <em>primary</em> lock-in amplifier are
+copied to the <em>secondary</em> amplifier.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.sync_lockin_settings()
+</pre></div>
+</div>
+</div>
+<div class="section" id="signal-readout">
+<h3>Signal Readout<a class="headerlink" href="#signal-readout" title="Permalink to this headline">¶</a></h3>
+<p>The acquired signal can be read out under software control. Both lock-in
+amplifiers are read out nearly synchronously (exact synchronism is not
+possible due to hardware limitations). The readings are combined into a complex
+value, where the real part represents the <em>primary</em> amplifier, and the
+imaginary part represents the <em>secondary</em> amplifier.  The returned value is
+in volts.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.get_lockin_voltage()
+(0.00029999999999999997+0.0001j)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="digitizer-averager">
+<h2>Digitizer/Averager<a class="headerlink" href="#digitizer-averager" title="Permalink to this headline">¶</a></h2>
+<p>To simplify configuration, the digitizers are always run in averager mode. They
+are configured to trigger on the positive edge of a TTL level pulse ($1.4$~V
+threshold) on the external trigger input. Where the characteristics of the
+signal inputs are configurable, an impedance of 50 ohms and maximum bandwidth
+are selected.</p>
+<div class="section" id="digitizer-averager-parameters">
+<h3>Digitizer/Averager Parameters<a class="headerlink" href="#digitizer-averager-parameters" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="input-voltage-range">
+<h3>Input Voltage Range<a class="headerlink" href="#input-voltage-range" title="Permalink to this headline">¶</a></h3>
+<p>The input voltage range<span class="math">\(-v \ldots +v\)</span>(in volts) of the averager inputs can be
+set and read back with the following functions. The software sets and assumes
+the same range for both channels.[#f1]_ If the requested range is not supported by the hardware, it may be
+rounded.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_averager_sensitivity(0.75)
+0.5
+95 GHz: s.get_averager_sensitivity()
+0.5
+</pre></div>
+</div>
+</div>
+<div class="section" id="sampling-time">
+<h3>Sampling Time<a class="headerlink" href="#sampling-time" title="Permalink to this headline">¶</a></h3>
+<p>The sampling time (the inverse of the sampling rate) can be set and read back
+using the following functions. The requested sampling time may be rounded to a
+value supported by the hardware. The time is specified in seconds.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_averager_samplingtime(1.1e-9)
+1.0000000000000001e-09
+95 GHz: s.get_averager_samplingtime()
+1.0000000000000001e-09
+</pre></div>
+</div>
+</div>
+<div class="section" id="record-length">
+<h3>Record Length<a class="headerlink" href="#record-length" title="Permalink to this headline">¶</a></h3>
+<p>The record length (number of samples to be acquired) can be set and and queried
+using the following functions.  Note that the record length may be rounded to a
+value supported by the hardware.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.set_record_length(1234)
+1248
+95 GHz: s.get_record_length()
+1248
+</pre></div>
+</div>
+</div>
+<div class="section" id="starting-an-acquisition">
+<h3>Starting an Acquisition<a class="headerlink" href="#starting-an-acquisition" title="Permalink to this headline">¶</a></h3>
+<p>The averaging process is started by using the following function, which takes
+the requested number of trigger events<span class="math">\(n\)</span>as an argument. Note that:math:` n`is
+restricted to<span class="math">\(1&lt;n&lt;65536\)</span>:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.start_averager(100)
+</pre></div>
+</div>
+</div>
+<div class="section" id="checking-acquisition-status">
+<h3>Checking Acquisition Status<a class="headerlink" href="#checking-acquisition-status" title="Permalink to this headline">¶</a></h3>
+<p>The acquisition status of the averager may be checked using the following
+function, which returns 1 if the averagers are running and 0 if they have been
+stopped or completed the requested number of averages.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.averager_busy()
+1
+</pre></div>
+</div>
+</div>
+<div class="section" id="aborting-an-acquisition">
+<h3>Aborting an Acquisition<a class="headerlink" href="#aborting-an-acquisition" title="Permalink to this headline">¶</a></h3>
+<p>A running acquisition may be aborted. This is useful as a fallback to reset the
+averagers if the acquisition does not complete on its own for some reason
+(i.e.insufficient trigger events). Note that this is a slow operation and
+should be avoided unless necessary.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.averager_busy()
+1
+95 GHz: s.stop_averager()
+95 GHz: s.averager_busy()
+0
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-readout">
+<h3>Data Readout<a class="headerlink" href="#data-readout" title="Permalink to this headline">¶</a></h3>
+<p>After the acquisition, the averaged data record can be read out. It is returned
+as a complex-valued array of values, where the real part represents the first
+and the imaginary part the second averager channel. The samples are represented
+in volts.:</p>
+<div class="highlight-python"><div class="highlight"><pre>95 GHz: s.read_averager()
+array([-0.10078125-0.10078125j, -0.10078125-0.10078125j,
+     -0.10078125-0.10078125j, -0.10078125-0.10078125j,
+     (...)
+     -0.10078125-0.10078125j, -0.10078125-0.10078125j])
+</pre></div>
+</div>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>This is a deliberate design decision
+to ensure that the quantization noise is at the same level for both channels.
+Also note that in a phase-cycled experiment, the functional role of the
+channels with respect to in-phase and out-of-phase components effectively
+alternates.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Spectrometer</a><ul>
+<li><a class="reference internal" href="#devices-managed-by-the-spectrometer">Devices Managed by the Spectrometer</a></li>
+<li><a class="reference internal" href="#transceiver-control">Transceiver Control</a><ul>
+<li><a class="reference internal" href="#transmitter-power">Transmitter Power</a></li>
+<li><a class="reference internal" href="#operating-frequency">Operating Frequency</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#magnet-control">Magnet Control</a><ul>
+<li><a class="reference internal" href="#main-coil-control">Main Coil Control</a></li>
+<li><a class="reference internal" href="#sweep-coil-control">Sweep Coil Control</a></li>
+<li><a class="reference internal" href="#calibration-constants-and-conversion-functions">Calibration Constants and Conversion Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lock-in-detection">Lock-In Detection</a><ul>
+<li><a class="reference internal" href="#field-modulation-and-lock-in-parameters">Field Modulation and Lock-In Parameters</a></li>
+<li><a class="reference internal" href="#modulation-frequency">Modulation Frequency</a></li>
+<li><a class="reference internal" href="#modulation-amplitude">Modulation Amplitude</a></li>
+<li><a class="reference internal" href="#time-constant">Time Constant</a></li>
+<li><a class="reference internal" href="#sensitivity">Sensitivity</a></li>
+<li><a class="reference internal" href="#phase">Phase</a></li>
+<li><a class="reference internal" href="#synchronizing-lock-in-settings">Synchronizing Lock-In Settings</a></li>
+<li><a class="reference internal" href="#signal-readout">Signal Readout</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#digitizer-averager">Digitizer/Averager</a><ul>
+<li><a class="reference internal" href="#digitizer-averager-parameters">Digitizer/Averager Parameters</a></li>
+<li><a class="reference internal" href="#input-voltage-range">Input Voltage Range</a></li>
+<li><a class="reference internal" href="#sampling-time">Sampling Time</a></li>
+<li><a class="reference internal" href="#record-length">Record Length</a></li>
+<li><a class="reference internal" href="#starting-an-acquisition">Starting an Acquisition</a></li>
+<li><a class="reference internal" href="#checking-acquisition-status">Checking Acquisition Status</a></li>
+<li><a class="reference internal" href="#aborting-an-acquisition">Aborting an Acquisition</a></li>
+<li><a class="reference internal" href="#data-readout">Data Readout</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="experiments.html"
+                        title="next chapter">Experiments</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/spectrometer.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="experiments.html" title="Experiments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">95 GHz ESR Software 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, John Franck, Drew Dolgert, Curt Dunnam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>

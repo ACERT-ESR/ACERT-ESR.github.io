@@ -1,0 +1,167 @@
+============
+Installation
+============
+
+------------
+Requirements
+------------
+
+This software should work with Python 2.4, 2.5, 2.6, or 2.7.
+
+You must install these modules:
+
+* numpy
+
+  After installing numpy, put its header files into an include path
+  for the C compiler so that they can be found when compiling the Chase
+  and Acqiris extension modules. Here are two examples of where
+  the numpy objectarray.h file should be found, but put all the header
+  files there.
+
+  * ``/usr/include/python2.4/numpy/objectarray.h``
+
+  * ``$HOME/lib/include/python2.4/numpy/objectarray.h``
+
+  If the numpy module was installed by ``easy_install,`` as described
+  below, then the header files will be inside of the installation egg
+  inside of the Python library directory.
+
+  If you use the Enthought Python distribution, then numpy is included.
+
+* distutils, if you are using Python 2.4.
+
+* Python Gnuplot module
+
+* Gnu Plotutils. Install the regular GNU Plotutils and ensure that
+  libplot.so is in the LD_LIBRARY_PATH. Then install python-libplot,
+  which is a sub-piece of the Biggles plotting library but installed
+  separately.
+
+* sphinx, if you are using Python before 2.6.
+
+To install Python modules for all users, use the command::
+
+  sudo easy_install numpy
+
+To install modules for just one user, try::
+
+  easy_install --prefix=$HOME numpy
+
+The chase_da module depends on drivers for the Chase DWG11000 card.
+The Acqiris module depends on its own drivers.
+
+--------
+Download
+--------
+
+The code is stored in CVS repositories  under a SourceForge project called ACERT-HFESR at `Cornell's SourceForge <https://forge.cornell.edu>`_. There are four repositories.
+
+* ``https://forge.cornell.edu/svn/repos/python-acqiris``---Python module to use Acqiris Linux drivers
+* ``https://forge.cornell.edu/svn/repos/python-chase_da``---Python interface to Chase DWG11000
+* ``https://forge.cornell.edu/svn/repos/python-hfesr``---High Frequency Electron Spin Resonance
+* ``https://forge.cornell.edu/svn/repos/python-spinapi``---Python module to access SpinAPI for the SpinCore PulseBlaster card
+
+The HFESR repository has three main directories, trunk, tags, and branches. This is customary for SVN. The trunk is the current working copy. Branches represent versions of the code that develop new functionality, to later merge to the trunk, and tags mark versions of the code that are important to find easily.
+
+The code is a combination of the four Python modules mentioned above. Those for Acqiris, Chase, and SpinAPI are Python extension modules, which means they contain C code which helps Python to call card drivers written in C. All of the modules install into the same basic namespace, called \computer{acert}.
+
+To install the code on a machine for the first time, check out each of the four modules and use the Python installation scripts. The following includes ``--prefix=\$HOME`` to install in a user's directory. Without that addition, this will install to the system directory.::
+
+  svn co https://forge.cornell.edu/svn/repos/python-acqiris/trunk acqiris
+  cd acqiris
+  python setup.py install --prefix=$HOME
+  cd ..
+  svn co https://forge.cornell.edu/svn/repos/python-chase\_da/trunk chase
+  cd chase
+  python setup.py install --prefix=$HOME
+  cd ..
+  svn co https://forge.cornell.edu/svn/repos/python-spinapi spinapi
+  cd spinapi
+  python setup.py install --prefix=$HOME
+  cd ..
+  svn co https://forge.cornell.edu/svn/repos/python-hfesr/trunk hfesr
+  cd hfesr
+  python setup.py install --prefix=$HOME
+
+If these modules are installed as shown above, they will be located in ``$HOME/lib/python2.4/site-packages/acert.`` If they are installed to the system location by a root user, they will likely be in ``/usr/lib/python2.4/site-packages/acert.``
+
+It is possible that the chase_da module will install into a different 
+directory from the others because it is an extension module. Python 2.4,
+on some systems, will put extensions installed as root into
+``/usr/lib64/python2.4/site-packages/acert/chase_da`` whereas the other
+modules install into
+``/usr/lib/python2.4/site-packages/acert/chase_da``. If this happens,
+and the PYTHONPATH environment variable is set to
+``/usr/lib/python2.4/site-packages`` then the chase_da extension will
+not be found. It won't work to set the PYTHONPATH to point to both
+directories, either. Just copy the chase_da directory from under
+lib64 to the same place under the lib directory.
+
+The SpinCore PulseBlaster card will not work unless the ``_run_spinapi_as_root``
+script can be suid root, meaning that a user, such as the acert user, has
+permissions set in the sudoers file to run this script as root.
+
+If the code is in the main Python system location, it can be called by any user.::
+
+  % python
+  Python 2.4.3 (#1, Dec 11 2006, 11:39:03)
+  [GCC 4.1.1 20061130 (Red Hat 4.1.1-43)] on linux2
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>> from acert.hfesr import Experiments, Spectrometer
+  >>> FID = Experiments.FID()
+
+If the code is in a user's directory, then that user has to set an environment variable called PYTHONPATH in order to see it, ``export PYTHONPATH=$HOME/lib/python2.4/site-packages.`` This is set in .bashrc for the Bash shell.
+
+If you want to modify code and re-run it, then the typical set of steps is:
+
+#. Check out the code to a directory.
+#. Modify files in that directory.
+#. Run ``python setup.py install --prefix=$HOME``, if that is the correct installation location.
+#. Try the modified code.
+
+---------------------
+Packages
+---------------------
+
+This software installs as the acert.hfesr package. Once it is installed,
+Python scripts in any directory can import modules from that package::
+
+  import acert.hfesr.util as io
+  import acert.hfesr.plot as plot
+  exp=io.load('FirstFID')
+  p=plot.plotfid(exp)
+
+This documentation doesn't include the full package names. Remember
+to include them when writing scripts.
+
+-------------------
+Configuration Files
+-------------------
+
+There is an initialization file for HFESR, located in three possible places. The later places on the list override the earlier ones.
+
+.. autofunction:: util.get_config
+
+The configuration file is a key=value format where comment lines can start with a hash or semicolon.::
+
+  [General]
+  # Can be debug, info, warn, error
+  # All messages at or above this level will be shown.
+  logging_level=info
+  results_directory=/results
+
+  [Spectrometer]
+  # chase or pulseblaster
+  signal_generator=chase
+
+  [DWG11000]
+  # Looping slower than this in hz use OS timer to repeat signal.
+  on_board_threshhold=500
+  # Looping a signal faster than this is not allowed.
+  max_rep_rate=20000
+  # The board sends 64ns chunks of signals. Fixed by the board.
+  segment_size=64
+  # Max loops a single segment can do. Fixed by the board.
+  max_iterations=16384
+
+The tune mode needs to know how large a window to show. Right now it is set by creating a file called $HOME/.Xresources and adding a line that says "Xplot.geometry: 1024x256".

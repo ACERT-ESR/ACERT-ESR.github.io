@@ -1,0 +1,31 @@
+Tune2
+=================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: Tune2
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Tune2.__init__
+      ~Tune2.build_sequences
+      ~Tune2.get_spectrometer
+      ~Tune2.plot
+      ~Tune2.plot_experiment
+      ~Tune2.plot_pulses
+      ~Tune2.process_overrides
+      ~Tune2.run
+      ~Tune2.set_field
+      ~Tune2.simple_sequence
+   
+   
+
+   
+   
+   

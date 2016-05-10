@@ -1,0 +1,31 @@
+TuneCycled
+======================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: TuneCycled
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TuneCycled.__init__
+      ~TuneCycled.build_sequences
+      ~TuneCycled.get_spectrometer
+      ~TuneCycled.plot
+      ~TuneCycled.plot_experiment
+      ~TuneCycled.plot_pulses
+      ~TuneCycled.process_overrides
+      ~TuneCycled.run
+      ~TuneCycled.set_field
+      ~TuneCycled.simple_sequence
+   
+   
+
+   
+   
+   

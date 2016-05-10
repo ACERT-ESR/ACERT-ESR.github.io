@@ -1,0 +1,35 @@
+DEER4
+=================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: DEER4
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DEER4.__init__
+      ~DEER4.acquire_data
+      ~DEER4.bin_switch_blank
+      ~DEER4.bin_switch_fieldsweep
+      ~DEER4.build_sequences
+      ~DEER4.get_spectrometer
+      ~DEER4.plot
+      ~DEER4.post_process_data
+      ~DEER4.process_overrides
+      ~DEER4.pull
+      ~DEER4.push
+      ~DEER4.run
+      ~DEER4.set_field
+      ~DEER4.simple_sequence
+   
+   
+
+   
+   
+   

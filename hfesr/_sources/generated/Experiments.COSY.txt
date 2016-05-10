@@ -1,0 +1,37 @@
+COSY
+================
+
+.. currentmodule:: Experiments
+
+.. autoclass:: COSY
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~COSY.__init__
+      ~COSY.acquire_data
+      ~COSY.bin_switch_blank
+      ~COSY.bin_switch_fieldsweep
+      ~COSY.build_sequences
+      ~COSY.get_spectrometer
+      ~COSY.plot
+      ~COSY.plot_experiment
+      ~COSY.plot_pulses
+      ~COSY.post_process_data
+      ~COSY.process_overrides
+      ~COSY.pull
+      ~COSY.push
+      ~COSY.run
+      ~COSY.set_field
+      ~COSY.simple_sequence
+   
+   
+
+   
+   
+   
