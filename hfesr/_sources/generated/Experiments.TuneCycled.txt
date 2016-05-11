@@ -1,13 +1,16 @@
 TuneCycled
-======================
+==========
 
 .. currentmodule:: Experiments
 
-.. autoclass:: TuneCycled
+.. comment: I set "members" without any arguments, which pulls
+    see https://github.com/sphinx-doc/sphinx/issues/904
+    as well as http://stackoverflow.com/questions/17610807/problems-with-autodoc-and-explicitly-specified-instance-attributes
 
+.. autoclass:: TuneCycled
+   :members:
    
    .. automethod:: __init__
-
    
    .. rubric:: Methods
 
@@ -23,9 +26,3 @@ TuneCycled
       ~TuneCycled.run
       ~TuneCycled.set_field
       ~TuneCycled.simple_sequence
-   
-   
-
-   
-   
-   

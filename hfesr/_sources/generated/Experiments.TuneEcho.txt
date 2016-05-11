@@ -3,7 +3,10 @@ TuneEcho
 
 .. currentmodule:: Experiments
 
+.. rather than modifying this by hand, as I have been, take a look at http://www.sphinx-doc.org/en/stable/ext/autosummary.html, "stub page templates"
+
 .. autoclass:: TuneEcho
+   :members:
 
    
    .. automethod:: __init__
@@ -24,6 +27,7 @@ TuneEcho
       ~TuneEcho.set_field
       ~TuneEcho.simple_sequence
    
+   .. rubric:: Method and Attribute documentation
    
 
    

@@ -63,57 +63,10 @@
 <dd><p>Like the FID experiment, but used for tuning,
 so it runs until a key is pressed. It does phase cycling to pull out the
 signal and ringdown (together) from behind the modulator background.</p>
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.averages">
-<code class="descname">averages</code><a class="headerlink" href="#Experiments.TuneCycled.averages" title="Permalink to this definition">¶</a></dt>
-<dd><p>The number of shots to be averaged for each step in the
-phase-cycle.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.phasecycle">
-<code class="descname">phasecycle</code><a class="headerlink" href="#Experiments.TuneCycled.phasecycle" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list of phase combinations denoting the desired phasecycle.
-Be default, a full CYCLOPS phasecycle is provided. This is a list</p>
-<blockquote>
-<div>where each member is a list of phases.</div></blockquote>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.pulse_length">
-<code class="descname">pulse_length</code><a class="headerlink" href="#Experiments.TuneCycled.pulse_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>The nominal duration [s] of the pulse.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.rep_rate">
-<code class="descname">rep_rate</code><a class="headerlink" href="#Experiments.TuneCycled.rep_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>The shot repetition rate [<span class="math">\(s^{-1}\)</span>]</p>
-</dd></dl>
-
-<p>After acquisition, the following additional properties are defined.</p>
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.data">
-<code class="descname">data</code><a class="headerlink" href="#Experiments.TuneCycled.data" title="Permalink to this definition">¶</a></dt>
-<dd><p>The acquired data, organized in a complex-valued <span class="math">\(n\times m\)</span>
-array, where <span class="math">\(n\)</span> is the number of steps in the phase cycle and
-<span class="math">\(m\)</span> is the record length.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.ended">
-<code class="descname">ended</code><a class="headerlink" href="#Experiments.TuneCycled.ended" title="Permalink to this definition">¶</a></dt>
-<dd><p>A textual representation of the time at which the experiment
-finished.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.TuneCycled.field">
-<code class="descname">field</code><a class="headerlink" href="#Experiments.TuneCycled.field" title="Permalink to this definition">¶</a></dt>
-<dd><p>The nominal magnetic field [T] at which the experiment was
-performed.</p>
-</dd></dl>
-
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">sphinx autodoc might show all the class attributes here as set to <code class="docutils literal"><span class="pre">None</span></code>.  In fact, they are typically set to a value after initialization.</p>
+</div>
 <dl class="method">
 <dt id="Experiments.TuneCycled.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#Experiments.TuneCycled.__init__" title="Permalink to this definition">¶</a></dt>
@@ -141,7 +94,7 @@ performed.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_experiment</span></code>([deglitch])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_pulses</span></code>(spectrometer,&nbsp;sequence)</td>
+<tr class="row-even"><td><a class="reference internal" href="#Experiments.TuneCycled.plot_pulses" title="Experiments.TuneCycled.plot_pulses"><code class="xref py py-obj docutils literal"><span class="pre">plot_pulses</span></code></a>(spectrometer,&nbsp;sequence)</td>
 <td>Given a single sequence, from build_sequences, this plots the generator signals used to send the pulse frame.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">process_overrides</span></code>()</td>
@@ -158,6 +111,61 @@ performed.</p>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.averages">
+<code class="descname">averages</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.averages" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of shots to be averaged for each step in the phase-cycle.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Experiments.TuneCycled.plot_pulses">
+<code class="descname">plot_pulses</code><span class="sig-paren">(</span><em>spectrometer</em>, <em>sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#Experiments.TuneCycled.plot_pulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a single sequence, from build_sequences, this plots the generator signals
+used to send the pulse frame.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.pulse_length">
+<code class="descname">pulse_length</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.pulse_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pulse duration</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.push_out">
+<code class="descname">push_out</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.push_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push the whole pulse sequence forward by this value.  Used, <em>e.g.</em> to measure ring-down.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.rep_rate">
+<code class="descname">rep_rate</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.rep_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>The repetition rate of the pulse</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.reprate">
+<code class="descname">reprate</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.reprate" title="Permalink to this definition">¶</a></dt>
+<dd><p>repetition rate</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.show_tune">
+<code class="descname">show_tune</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.show_tune" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the various responses (see table) while tuning</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.sweep_range">
+<code class="descname">sweep_range</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.sweep_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set, continuously sweep over <span class="math">\(\pm\)</span> <cite>sweep_range</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Experiments.TuneCycled.te">
+<code class="descname">te</code><em class="property"> = None</em><a class="headerlink" href="#Experiments.TuneCycled.te" title="Permalink to this definition">¶</a></dt>
+<dd><p>Echo time</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -222,4 +230,4 @@ performed.</p>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>
-</html>
+</html> 
