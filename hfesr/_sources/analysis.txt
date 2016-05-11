@@ -5,7 +5,7 @@ Analysis
 -------------
 Phase Cycling
 -------------
-Note that it makes the most sense to phase cycle the pulses in the correct order.  The :function:`simple_sequence <Experiments.Experiment.simple_sequence>` method should be used to eaily construct pulse sequences with standard phase cycling.
+Note that it makes the most sense to phase cycle the pulses in the correct order.  The :func:`simple_sequence <Experiments.Experiment.simple_sequence>` method should be used to eaily construct pulse sequences with standard phase cycling.
 
 Previously, the following module was used to control phase cycling.
 However, it is now **obsolete**.
@@ -143,6 +143,8 @@ Continuous Wave Spectra
 Exporting Data
 ----------------
 
+.. warning:: Much of the following will be made obsolete by the introduction of new data-saving classes by CAC
+
 Results of experiments are all stored in the same directory,
 specified by Spectrometer.results. Each filename has the format
 YYYY-MM-DD_experiment_username_label.dat. A text formatted version
@@ -171,6 +173,8 @@ standard file format specification to adhere to.
 Writing Data to a File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. warning:: Much of the following will be made obsolete by the introduction of new data-saving classes by CAC
+
 .. autofunction:: io_doc.save
 
 .. autofunction:: io_doc.saveexp
@@ -184,3 +188,4 @@ Writing Data to a File
 
 .. [#f1] For details, refer to the Python and Numeric Python
    documentation available at `Python.org <http://www.python.org>`_.
+

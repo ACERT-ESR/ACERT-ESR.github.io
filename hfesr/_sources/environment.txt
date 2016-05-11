@@ -5,6 +5,8 @@ Software Environment
 Using Software Versions
 -----------------------
 
+.. note:: JMF does not see the benefit to the virtualenvwrapper functions described below.  When we transition to a new computer, we should consider not using it.
+
 Multiple versions of the hfesr software are installed on Maxwell, but only one can be active at a time.  
 The name of the current active version is displayed in parenthesis at the beginning of the command prompt::
 
@@ -49,5 +51,6 @@ python installer.  From within the source directory, the installer may be run by
 This will install the spectrometer controller code into the currently selected named version.  In the example above,
 this is "hfesr_dev".  It is important to be aware of which version the source is being installed into.   Use
 "workon" to chenage the currently selected version if necessary.
+
 
 

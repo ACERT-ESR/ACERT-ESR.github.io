@@ -134,22 +134,19 @@ it can include math in its output:</p>
 <div class="highlight-python"><div class="highlight"><pre>The length of the phase cycle is :math:`m^n`.
 </pre></div>
 </div>
-<p>There are several possible
-math modules for sphinx, but the math language is latex,
-so it does not matter which extension you pick if you are
-building latex documentation.</p>
-<p>When embedding math documentation in code, be sure to escape
-backslashes, so:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">myfunction</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    This function looks at :math:`+1\\rightarrow 0\\rightarrow -1`.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-</pre></div>
-</div>
-<p>If you neglect to escape the backslash, you will get errors from
-Sphinx that the block is indented improperly because <code class="docutils literal"><span class="pre">\r</span></code> is
-a carriage return.</p>
-<p>To build the documentation</p>
+<p>All math is written in <span class="math">\(\LaTeX\)</span>.</p>
+<p>When embedding math documentation in code, be sure to
+use <code class="docutils literal"><span class="pre">r</span></code> to get non-escaping quotes, <code class="docutils literal"><span class="pre">r&quot;like</span> <span class="pre">this&quot;</span></code>.
+Otherwise you need to double all explicit backslashes.</p>
+<p>If you neglect to escape the backslash, you can, <em>e.g.</em>, get errors
+from Sphinx that the block is indented improperly because <code class="docutils literal"><span class="pre">\r</span></code> is a
+carriage return.</p>
+<p>To build the documentation as a web-page:</p>
+<ol class="arabic simple">
+<li>cd docs</li>
+<li>make html</li>
+</ol>
+<p>To build the documentation PDF:</p>
 <ol class="arabic simple">
 <li>cd docs</li>
 <li>make latex</li>
@@ -158,6 +155,10 @@ a carriage return.</p>
 </div>
 <div class="section" id="versioning">
 <h2>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">No idea if the following feature is still used.  Ultimately, we will want to transition exclusively to git and use version tags.</p>
+</div>
 <p>It might help to record the version of the code when you record data.
 There is a function in the acert.hfesr module to tell you what
 version of the code you are using.</p>

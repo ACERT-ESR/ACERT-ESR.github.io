@@ -60,55 +60,20 @@
 <dl class="class">
 <dt id="Experiments.PulseExperimentBase">
 <em class="property">class </em><code class="descclassname">Experiments.</code><code class="descname">PulseExperimentBase</code><span class="sig-paren">(</span><em>field_sweep=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Experiments.PulseExperimentBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for pulsed experiments, implements on and off-field measurements
-using sweep coil
-.. attribute:: baseline_requested</p>
-<blockquote>
-<div><p>If true, the experiment will be run twice.  The second run will be a
-baseline or &#8220;off-field&#8221; measurement using the sweep coils to generate
-a fixed B:sub:&#8216;0&#8217;field offset.</p>
-<blockquote>
-<div>The lower limit of the magnetic field range [T]</div></blockquote>
-</div></blockquote>
-<dl class="attribute">
-<dt id="Experiments.PulseExperimentBase.scans">
-<code class="descname">scans</code><a class="headerlink" href="#Experiments.PulseExperimentBase.scans" title="Permalink to this definition">¶</a></dt>
-<dt>
-<code class="descname">The number of scans (i.e experiment runs) to complete.  If this number N is greater than 1, the</code></dt>
-<dt>
-<code class="descname">experiment will be re-run N times.  Files will be named with a scan ID before the .hdf5 prefix</code></dt>
-<dt>
-<code class="descname">(e.g MyExperiment_03.hdf5)</code></dt>
-<dd><p>If true, the acquired data will be represented in an array with at
-least three dimensions:  sample x pulse_sequence x phase</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.PulseExperimentBase.in_field_sweep_current">
-<code class="descname">in_field_sweep_current</code><a class="headerlink" href="#Experiments.PulseExperimentBase.in_field_sweep_current" title="Permalink to this definition">¶</a></dt>
-<dt>
-<code class="descname">When baseline_requested is true, this value will be used for the</code></dt>
-<dt>
-<code class="descname">&quot;in-field&quot; sweep current during data collection.  Typically, this will</code></dt>
-<dt>
-<code class="descname">be close to 0 and represents minor adjustments to B :sub:'0'.</code></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="Experiments.PulseExperimentBase.off_field_sweep_current">
-<code class="descname">off_field_sweep_current</code><a class="headerlink" href="#Experiments.PulseExperimentBase.off_field_sweep_current" title="Permalink to this definition">¶</a></dt>
-<dt>
-<code class="descname">When baseline_requested is true, this value will be used for the</code></dt>
-<dt>
-<code class="descname">&quot;off-field&quot; sweep current when measuring the baseline.  This value should be</code></dt>
-<dt>
-<code class="descname">sufficiently far from 0 so as to affect reconance.</code></dt>
-<dd></dd></dl>
-
+<dd><p>Base class for pulsed experiments.</p>
+<p>Implements on and off-field measurements using sweep coil, as
+well as field-sweeps and binned averages.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">sphinx autodoc might show all the class attributes here as set to <code class="docutils literal"><span class="pre">None</span></code>.  In fact, they are typically set to a value after initialization.</p>
+</div>
 <dl class="method">
 <dt id="Experiments.PulseExperimentBase.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>field_sweep=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Experiments.PulseExperimentBase.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The initialization routine accepts a <cite>field_sweep</cite>
+parameter that sets up a field-swept experiment (where various
+<cite>bin</cite>s are acquired at different fields.)</p>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -118,10 +83,10 @@ least three dimensions:  sample x pulse_sequence x phase</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#Experiments.PulseExperimentBase.__init__" title="Experiments.PulseExperimentBase.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([field_sweep])</td>
-<td></td>
+<td>The initialization routine accepts a <cite>field_sweep</cite></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">acquire_data</span></code>(spectrometer,&nbsp;sequences[,&nbsp;...])</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="../experiments.html#Experiments.PulseExperimentBase.acquire_data" title="Experiments.PulseExperimentBase.acquire_data"><code class="xref py py-obj docutils literal"><span class="pre">acquire_data</span></code></a>(spectrometer,&nbsp;sequences[,&nbsp;...])</td>
+<td>Actually acquire the data.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">bin_switch_blank</span></code>(bins,&nbsp;bin_number)</td>
 <td></td>
@@ -135,17 +100,17 @@ least three dimensions:  sample x pulse_sequence x phase</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code>(*args,&nbsp;**kwargs)</td>
 <td>Create the default plot for this experiment.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">post_process_data</span></code>(data)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="../experiments.html#Experiments.PulseExperimentBase.post_process_data" title="Experiments.PulseExperimentBase.post_process_data"><code class="xref py py-obj docutils literal"><span class="pre">post_process_data</span></code></a>(data)</td>
+<td><strong>Obsolete/Legacy</strong> by default empty, this is used to apply post-processing to the results.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">process_overrides</span></code>()</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="../experiments.html#Experiments.PulseExperimentBase.process_overrides" title="Experiments.PulseExperimentBase.process_overrides"><code class="xref py py-obj docutils literal"><span class="pre">process_overrides</span></code></a>()</td>
+<td>processes the <cite>num_fields</cite> and <cite>averages_per_bin</cite> attributes, using the to override <cite>bins</cite> and <cite>averages</cite></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">pull</span></code>()</td>
-<td>pulls all the current parameters from &#8220;util.settings&#8221;</td>
+<tr class="row-odd"><td><a class="reference internal" href="../experiments.html#Experiments.PulseExperimentBase.pull" title="Experiments.PulseExperimentBase.pull"><code class="xref py py-obj docutils literal"><span class="pre">pull</span></code></a>()</td>
+<td>pulls all the current parameters</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">push</span></code>([param,&nbsp;val])</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="../experiments.html#Experiments.PulseExperimentBase.push" title="Experiments.PulseExperimentBase.push"><code class="xref py py-obj docutils literal"><span class="pre">push</span></code></a>([param,&nbsp;val])</td>
+<td>The opposite of <a class="reference internal" href="../experiments.html#Experiments.PulseExperimentBase.pull" title="Experiments.PulseExperimentBase.pull"><code class="xref py py-func docutils literal"><span class="pre">pull</span></code></a>.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_field</span></code>(thisfield[,&nbsp;spectrometer_arg])</td>
 <td>Use <cite>thisfield</cite> to determine <cite>self.main_current</cite> <cite>self.main_field</cite> and <cite>self.in_field_sweep_current</cite>.</td>
