@@ -1,6 +1,0 @@
-handle_break
-========================
-
-.. currentmodule:: Experiments
-
-.. autofunction:: handle_break

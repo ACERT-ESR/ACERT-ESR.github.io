@@ -1,6 +1,0 @@
-PulsedAcquisition
-=============================
-
-.. currentmodule:: Experiments
-
-.. autofunction:: PulsedAcquisition

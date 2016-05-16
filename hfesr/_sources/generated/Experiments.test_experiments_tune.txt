@@ -1,6 +1,0 @@
-test_experiments_tune
-=================================
-
-.. currentmodule:: Experiments
-
-.. autofunction:: test_experiments_tune

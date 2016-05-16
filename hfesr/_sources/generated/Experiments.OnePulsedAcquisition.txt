@@ -1,6 +1,0 @@
-OnePulsedAcquisition
-================================
-
-.. currentmodule:: Experiments
-
-.. autofunction:: OnePulsedAcquisition

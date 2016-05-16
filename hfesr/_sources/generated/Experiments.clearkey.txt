@@ -1,6 +1,0 @@
-clearkey
-====================
-
-.. currentmodule:: Experiments
-
-.. autofunction:: clearkey
